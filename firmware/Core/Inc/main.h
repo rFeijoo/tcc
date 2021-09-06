@@ -78,7 +78,11 @@ void Error_Handler(void);
 #define T_SWO_Pin GPIO_PIN_3
 #define T_SWO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-
+#define VCC					3.3
+#define ADC_RES_BITS		4095.0
+#define WORD_LENGTH			32
+#define HALF_WORD_LENGTH	16
+#define LSB_WORD_BIT_MASK	0xFFFF
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

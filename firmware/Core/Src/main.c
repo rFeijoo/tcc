@@ -26,6 +26,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include "meas.h"
+#include "objects_def.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,7 +46,6 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -63,20 +64,6 @@ int _write(int file, char *ptr, int len)
 		ITM_SendChar((*ptr++));
 
 	return (len);
-}
-
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
-{
-	UNUSED(GPIO_Pin);
-
-	// seccionamento do circuito
-}
-
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-	UNUSED(&htim);
-
-	// amostragem de tensão e corrente
 }
 /* USER CODE END 0 */
 
@@ -113,6 +100,8 @@ int main(void)
   MX_ADC2_Init();
   /* USER CODE BEGIN 2 */
   printf("-- Starting System's Configuration\n");
+
+  objects_def_init();
 
   HAL_TIM_Base_Start_IT(&htim1);
 

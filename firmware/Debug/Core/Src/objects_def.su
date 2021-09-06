@@ -1,0 +1,2 @@
+objects_def.c:5:6:objects_def_init	8	static
+objects_def.c:10:6:objects_def_adc_conversion_complete	24	static
