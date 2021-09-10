@@ -11,17 +11,19 @@ photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, 
 
 	ph_struct->pe_interval_cnt = 0;
 
+	ph_struct->events_handler = 0;
+
 	printf("Initializing %s:\n", ph_struct->tag);
 
-	ph_struct->voltage = meas_initialize_rms_objects("Voltage", ADC_master);
-	ph_struct->current = meas_initialize_rms_objects("Voltage", ADC_slave);
+	ph_struct->voltage = meas_initialize_rms_objects("Voltage", ADC_master, VOLTAGE_UPPER_LIMIT, VOLTAGE_LOWER_LIMIT);
+	ph_struct->current = meas_initialize_rms_objects("Current", ADC_slave,  CURRENT_UPPER_LIMIT, CURRENT_LOWER_LIMIT);
 
 	ph_struct->power_energy = meas_initialize_power_and_energy_objects();
 
 	return(ph_struct);
 }
 
-rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC)
+rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC, uint16_t high_trigger, uint16_t low_trigger)
 {
 	rms_measurement *rms_struct = (rms_measurement *)malloc(sizeof(rms_measurement));
 
@@ -35,6 +37,9 @@ rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC)
 	rms_struct->thrd_level_index = 0;
 	rms_struct->frth_level_index = 0;
 	rms_struct->ffth_level_index = 0;
+
+	rms_struct->high_trigger = high_trigger;
+	rms_struct->low_trigger  = low_trigger;
 
 	HAL_ADCEx_Calibration_Start(rms_struct->ADC, ADC_SINGLE_ENDED);
 
@@ -61,12 +66,66 @@ power_and_energy *meas_initialize_power_and_energy_objects(void)
 	return (pe_struct);
 }
 
-void meas_objects_handler(photovoltaic *ptr, float voltage, float current)
+void meas_sample(photovoltaic *ptr)
 {
-	meas_aggregation_handler(ptr->voltage, voltage);
-	meas_aggregation_handler(ptr->current, current);
+	// Obtém a leitura simultânea dos módulos ADC
+	uint32_t raw  = HAL_ADCEx_MultiModeGetValue(ptr->voltage->ADC);
 
+	// Extrai a tensão a partir da leitura simultanea dos módulos ADC (16 bits LSB)
+	ptr->voltage->sample = (raw & LSB_WORD_BIT_MASK) * (VCC / ADC_RES_BITS) * VOLTAGE_GAIN;
+
+	// Extrai a corrente a partir da leitura simultanea dos módulos ADC (16 bits MSB)
+	ptr->current->sample = (raw >> HALF_WORD_LENGTH) * (VCC / ADC_RES_BITS) * CURRENT_GAIN;
+
+	// Inicia o processamento das medições de tensão e corrente
+	meas_objects_handler(ptr);
+}
+
+void meas_objects_handler(photovoltaic *ptr)
+{
+	// Verifica eventos na medição de tensão (sobretensão, subtensão)
+	meas_verify_voltage_triggers(ptr);
+
+	// Gerencia o protocolo de agregação em multi-camadas para medição de tensão
+	meas_aggregation_handler(ptr->voltage, ptr->voltage->sample);
+
+	// Verifica eventos na medição de corrente (sobrecorrente)
+	meas_verify_current_triggers(ptr);
+
+	// Gerencia o protocolo de agregação em multi-camadas para medição de corrente
+	meas_aggregation_handler(ptr->current, ptr->current->sample);
+
+	// Gerencia o protocolo de medição de potência e energia produzidas
 	meas_compute_power_and_energy(ptr);
+}
+
+void meas_verify_voltage_triggers(photovoltaic *ptr)
+{
+	// Reseta o(s) bit(s) referente(s) a medição de tensão
+	ptr->events_handler &= 0xF5;
+
+	// Identifica eventos de sobretensão
+	if (ptr->voltage->sample >= VOLTAGE_UPPER_LIMIT)
+	{
+		ptr->events_handler |= 0x02;
+	}
+	// Identifica eventos de subtensão
+	else if (ptr->voltage->sample <= VOLTAGE_LOWER_LIMIT)
+	{
+		ptr->events_handler |= 0x08;
+	}
+}
+
+void meas_verify_current_triggers(photovoltaic *ptr)
+{
+	// Reseta o(s) bit(s) referente(s) a medição de corrente
+	ptr->events_handler &= 0xFB;
+
+	// Identifica eventos de sobrecorrente
+	if (ptr->current->sample >= CURRENT_UPPER_LIMIT)
+	{
+		ptr->events_handler |= 0x04;
+	}
 }
 
 void meas_aggregation_handler(rms_measurement *ptr, float value)
@@ -107,16 +166,20 @@ void meas_aggregation_handler(rms_measurement *ptr, float value)
 
 void meas_compute_power_and_energy(photovoltaic *ptr)
 {
+	// Divisor de clock [3 segundos]
 	if (!meas_power_energy_interval(ptr))
 		return;
 
 	float voltage = ptr->voltage->thrd_level[ptr->power_energy->frst_level_index];
 	float current = ptr->current->thrd_level[ptr->power_energy->frst_level_index];
 
+	// Conversão W -> KW
 	float power_3s = (voltage * current) / 1000.0;
 
+	// Conversão KW -> (KW / h)
 	ptr->power_energy->energy += (power_3s / 3600.0);
 
+	// Protocolo de agregação em multi-camadas da potência produzida
 	ptr->power_energy->frst_level[ptr->power_energy->frst_level_index++] = power_3s;
 
 	if (ptr->power_energy->frst_level_index == RMS_THRD_LEVEL_LENGTH)

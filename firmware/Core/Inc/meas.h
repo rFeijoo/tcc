@@ -29,10 +29,26 @@
 #define POWER_ENERGY_INTERVAL	(RMS_FRST_LEVEL_LENGTH * RMS_SCND_LEVEL_LENGTH)
 
 /**
+ *	@brief Definição dos ganhos dos circuitos de medição em regime permanente.
+ */
+#define VOLTAGE_GAIN 151.52
+#define CURRENT_GAIN 17.857
+
+/**
+ *	@brief Definição dos limiares de tensão e corrente.
+ */
+#define VOLTAGE_UPPER_LIMIT 475.0
+#define VOLTAGE_LOWER_LIMIT	25.00
+#define CURRENT_UPPER_LIMIT	19.00
+#define CURRENT_LOWER_LIMIT	0.000
+
+/**
  *	@brief Definição da estrutura de medição para tensão e corrente.
  */
 typedef struct {
 	ADC_HandleTypeDef *ADC;
+
+	float sample;
 
 	float frst_level[RMS_FRST_LEVEL_LENGTH];
 	float scnd_level[RMS_SCND_LEVEL_LENGTH];
@@ -45,6 +61,8 @@ typedef struct {
 	uint8_t thrd_level_index;
 	uint8_t frth_level_index;
 	uint8_t ffth_level_index;
+
+	uint8_t high_trigger, low_trigger;
 } rms_measurement;
 
 /**
@@ -74,15 +92,23 @@ typedef struct {
 	power_and_energy *power_energy;
 
 	uint16_t pe_interval_cnt;
+
+	uint8_t events_handler;
 } photovoltaic;
 
 photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave);
 
-rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC);
+rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC, uint16_t high_trigger, uint16_t low_trigger);
 
 power_and_energy *meas_initialize_power_and_energy_objects(void);
 
-void meas_objects_handler(photovoltaic *ptr, float voltage, float current);
+void meas_sample(photovoltaic *ptr);
+
+void meas_objects_handler(photovoltaic *ptr);
+
+void meas_verify_voltage_triggers(photovoltaic *ptr);
+
+void meas_verify_current_triggers(photovoltaic *ptr);
 
 void meas_aggregation_handler(rms_measurement *ptr, float value);
 

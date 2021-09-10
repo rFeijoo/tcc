@@ -12,9 +12,16 @@
 #include "adc.h"
 #include "tim.h"
 #include "meas.h"
+#include "events.h"
 
 void objects_def_init(void);
 
-void objects_def_adc_conversion_complete(ADC_HandleTypeDef *hadc, float v, float i);
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc);
+
+void HAL_ADC_LevelOutOfWindowCallback(ADC_HandleTypeDef *hadc);
+
+void objects_def_exti_gpio(uint16_t GPIO_Pin);
+
+void objects_def_loop(void);
 
 #endif /*_OBJECTS_DEF_H_*/

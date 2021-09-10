@@ -266,17 +266,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
 }
 
 /* USER CODE BEGIN 1 */
-void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
-{
-	UNUSED(hadc);
 
-	uint32_t raw  = HAL_ADCEx_MultiModeGetValue(&hadc1);
-
-	float voltage = (raw & LSB_WORD_BIT_MASK) * (VCC / ADC_RES_BITS);
-	float current = (raw >> HALF_WORD_LENGTH) * (VCC / ADC_RES_BITS);
-
-	objects_def_adc_conversion_complete(hadc, voltage, current);
-}
 /* USER CODE END 1 */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -1,4 +1,5 @@
-Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
+Core/Src/events.o: ../Core/Src/events.c ../Core/Inc/events.h \
+ ../Core/Inc/meas.h ../Core/Inc/adc.h ../Core/Inc/main.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal.h \
  ../Core/Inc/stm32g4xx_hal_conf.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_rcc.h \
@@ -29,10 +30,13 @@ Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr_ex.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h \
- ../Core/Inc/objects_def.h ../Core/Inc/adc.h ../Core/Inc/tim.h \
- ../Core/Inc/meas.h ../Core/Inc/events.h
+ ../Core/Inc/tim.h
 
-../Core/Inc/gpio.h:
+../Core/Inc/events.h:
+
+../Core/Inc/meas.h:
+
+../Core/Inc/adc.h:
 
 ../Core/Inc/main.h:
 
@@ -96,12 +100,4 @@ Core/Src/gpio.o: ../Core/Src/gpio.c ../Core/Inc/gpio.h ../Core/Inc/main.h \
 
 ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h:
 
-../Core/Inc/objects_def.h:
-
-../Core/Inc/adc.h:
-
 ../Core/Inc/tim.h:
-
-../Core/Inc/meas.h:
-
-../Core/Inc/events.h:

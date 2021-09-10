@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include "meas.h"
 #include "objects_def.h"
+#include "events.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -112,6 +114,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	objects_def_loop();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
