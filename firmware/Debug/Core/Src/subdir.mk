@@ -5,8 +5,12 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
+../Core/Src/adc.c \
+../Core/Src/events.c \
 ../Core/Src/gpio.c \
 ../Core/Src/main.c \
+../Core/Src/meas.c \
+../Core/Src/objects_def.c \
 ../Core/Src/stm32g4xx_hal_msp.c \
 ../Core/Src/stm32g4xx_it.c \
 ../Core/Src/syscalls.c \
@@ -15,8 +19,12 @@ C_SRCS += \
 ../Core/Src/tim.c 
 
 OBJS += \
+./Core/Src/adc.o \
+./Core/Src/events.o \
 ./Core/Src/gpio.o \
 ./Core/Src/main.o \
+./Core/Src/meas.o \
+./Core/Src/objects_def.o \
 ./Core/Src/stm32g4xx_hal_msp.o \
 ./Core/Src/stm32g4xx_it.o \
 ./Core/Src/syscalls.o \
@@ -25,8 +33,12 @@ OBJS += \
 ./Core/Src/tim.o 
 
 C_DEPS += \
+./Core/Src/adc.d \
+./Core/Src/events.d \
 ./Core/Src/gpio.d \
 ./Core/Src/main.d \
+./Core/Src/meas.d \
+./Core/Src/objects_def.d \
 ./Core/Src/stm32g4xx_hal_msp.d \
 ./Core/Src/stm32g4xx_it.d \
 ./Core/Src/syscalls.d \

@@ -28,7 +28,7 @@ extern "C" {
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "objects_def.h"
 /* USER CODE END Includes */
 
 /* USER CODE BEGIN Private defines */
@@ -38,7 +38,7 @@ extern "C" {
 void MX_GPIO_Init(void);
 
 /* USER CODE BEGIN Prototypes */
-
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 /* USER CODE END Prototypes */
 
 #ifdef __cplusplus

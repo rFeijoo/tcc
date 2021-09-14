@@ -1,0 +1,11 @@
+meas.c:3:15:meas_initialize_objects	32	static
+meas.c:26:18:meas_initialize_rms_objects	32	static
+meas.c:51:19:meas_initialize_power_and_energy_objects	16	static
+meas.c:69:6:meas_sample	32	static
+meas.c:84:6:meas_objects_handler	16	static
+meas.c:102:6:meas_verify_voltage_triggers	16	static
+meas.c:119:6:meas_verify_current_triggers	16	static
+meas.c:131:6:meas_aggregation_handler	24	static
+meas.c:167:6:meas_compute_power_and_energy	40	static
+meas.c:203:5:meas_power_energy_interval	16	static
+meas.c:217:7:meas_quadratic_average	24	static
