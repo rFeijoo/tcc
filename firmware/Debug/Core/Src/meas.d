@@ -29,7 +29,7 @@ Core/Src/meas.o: ../Core/Src/meas.c ../Core/Inc/meas.h ../Core/Inc/adc.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_pwr_ex.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim.h \
  ../Drivers/STM32G4xx_HAL_Driver/Inc/stm32g4xx_hal_tim_ex.h \
- ../Core/Inc/tim.h ../Core/Inc/events.h ../Core/Inc/meas.h
+ ../Core/Inc/tim.h ../Core/Inc/structs.h
 
 ../Core/Inc/meas.h:
 
@@ -99,6 +99,4 @@ Core/Src/meas.o: ../Core/Src/meas.c ../Core/Inc/meas.h ../Core/Inc/adc.h \
 
 ../Core/Inc/tim.h:
 
-../Core/Inc/events.h:
-
-../Core/Inc/meas.h:
+../Core/Inc/structs.h:

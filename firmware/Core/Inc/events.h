@@ -10,7 +10,8 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include "meas.h"
+#include "gpio.h"
+#include "structs.h"
 
 /**
  *	@brief Módulo gerenciador de eventos.
@@ -27,6 +28,12 @@
  *	8: reserva
  */
 
-uint8_t events_toggle_bit(uint8_t bit, uint8_t mask);
+debug_mod *events_initialize_debug_mod(char *tag, GPIO_TypeDef *Port, uint16_t LED1, uint16_t LED2, uint16_t LED3);
+
+void events_handler(photovoltaic *ptr);
+
+void events_set_debugger(photovoltaic *ptr);
+
+void events_output_debugger(photovoltaic *ptr, uint8_t value);
 
 #endif /*_EVENTS_MANAGER_H_*/

@@ -71,6 +71,12 @@ void Error_Handler(void);
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14
 #define T_SWCLK_GPIO_Port GPIOA
+#define DEBUG_LED1_Pin GPIO_PIN_3
+#define DEBUG_LED1_GPIO_Port GPIOB
+#define DEBUG_LED2_Pin GPIO_PIN_4
+#define DEBUG_LED2_GPIO_Port GPIOB
+#define DEBUG_LED3_Pin GPIO_PIN_5
+#define DEBUG_LED3_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define VCC					3.3
 #define ADC_RES_BITS		4095.0

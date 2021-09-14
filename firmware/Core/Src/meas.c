@@ -1,6 +1,6 @@
 #include "meas.h"
 
-photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave)
+photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, debug_mod	*debug_mod)
 {
 	photovoltaic *ph_struct = (photovoltaic *)malloc(sizeof(photovoltaic));
 
@@ -19,6 +19,11 @@ photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, 
 	ph_struct->current = meas_initialize_rms_objects("Current", ADC_slave,  CURRENT_UPPER_LIMIT, CURRENT_LOWER_LIMIT);
 
 	ph_struct->power_energy = meas_initialize_power_and_energy_objects();
+
+	if (debug_mod == NULL)
+		ph_struct->debugger = NULL;
+	else
+		ph_struct->debugger = debug_mod;
 
 	return(ph_struct);
 }
@@ -64,6 +69,14 @@ power_and_energy *meas_initialize_power_and_energy_objects(void)
 	printf("\t- Power & Energy measurement initialized\n");
 
 	return (pe_struct);
+}
+
+void meas_decouple_system(photovoltaic *ptr)
+{
+	if ((ptr->events_handler & 0x01) == 1)
+		ptr->events_handler &= ~0x01;
+	else
+		ptr->events_handler |= 0x01;
 }
 
 void meas_temperature(photovoltaic *ptr)
