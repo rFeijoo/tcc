@@ -9,9 +9,10 @@ void objects_def_init(void)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-	UNUSED(hadc);
-
-	meas_sample(cell);
+	if (hadc->Instance == ADC1)
+		meas_sample(cell);
+	else if (hadc->Instance == ADC5)
+		meas_temperature(cell);
 }
 
 void objects_def_exti_gpio(uint16_t GPIO_Pin)

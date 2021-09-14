@@ -14,6 +14,13 @@
 #include <math.h>
 #include "adc.h"
 #include "tim.h"
+#include "events.h"
+
+/**
+ *	@brief Definições gerais do sistema.
+ */
+#define SYSTEM_VCC		3.3
+#define ADC_RESOLUTION	4095.0
 
 /**
  * @brief Comprimento de vetores para armazenamento de dados, considerando os diferentes níveis de
@@ -41,6 +48,14 @@
 #define VOLTAGE_LOWER_LIMIT	25.00
 #define CURRENT_UPPER_LIMIT	19.00
 #define CURRENT_LOWER_LIMIT	0.000
+#define TEMPERATURE_LIMIT	70.00
+
+/**
+ *	@brief Definições do sensor de temperatura integrado.
+ */
+#define TEMP_SENSOR_TREF	30.000
+#define TEMP_SENSOR_VREF	0.7600
+#define TEMP_SENSOR_SLOPE	0.0025
 
 /**
  *	@brief Definição da estrutura de medição para tensão e corrente.
@@ -89,6 +104,8 @@ typedef struct {
 	rms_measurement *voltage;
 	rms_measurement *current;
 
+	float temperature;
+
 	power_and_energy *power_energy;
 
 	uint16_t pe_interval_cnt;
@@ -103,6 +120,8 @@ rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC, 
 power_and_energy *meas_initialize_power_and_energy_objects(void);
 
 void meas_sample(photovoltaic *ptr);
+
+void meas_temperature(photovoltaic *ptr);
 
 void meas_objects_handler(photovoltaic *ptr);
 
