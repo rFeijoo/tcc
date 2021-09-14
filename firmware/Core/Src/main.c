@@ -100,12 +100,17 @@ int main(void)
   MX_TIM1_Init();
   MX_ADC1_Init();
   MX_ADC2_Init();
+  MX_ADC5_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   printf("-- Starting System's Configuration\n");
 
   objects_def_init();
 
+  HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
+
   HAL_TIM_Base_Start_IT(&htim1);
+  HAL_TIM_Base_Start_IT(&htim2);
 
   printf("-- End of System's Configuration\n");
   /* USER CODE END 2 */
@@ -167,8 +172,9 @@ void SystemClock_Config(void)
   }
   /** Initializes the peripherals clocks
   */
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12|RCC_PERIPHCLK_ADC345;
   PeriphClkInit.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
+  PeriphClkInit.Adc345ClockSelection = RCC_ADC345CLKSOURCE_SYSCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)
   {
     Error_Handler();

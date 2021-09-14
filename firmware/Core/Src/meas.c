@@ -66,6 +66,24 @@ power_and_energy *meas_initialize_power_and_energy_objects(void)
 	return (pe_struct);
 }
 
+void meas_temperature(photovoltaic *ptr)
+{
+	// Obtém a leitura do módulo ADC, em bits
+	uint32_t raw = HAL_ADC_GetValue(&hadc5);
+
+	// Converte a leitura do módulo ADC em tensão
+	float voltage = (float)raw * (SYSTEM_VCC / ADC_RESOLUTION);
+
+	// Converte a tensão em temperatura (ºC)
+	ptr->temperature = ((voltage - TEMP_SENSOR_VREF) / TEMP_SENSOR_SLOPE) + TEMP_SENSOR_TREF;
+
+	// Verifica se há superaquecimento
+	if (ptr->temperature >= TEMPERATURE_LIMIT)
+		ptr->events_handler |= 0x10;
+	else
+		ptr->events_handler &= ~0x10;
+}
+
 void meas_sample(photovoltaic *ptr)
 {
 	// Obtém a leitura simultânea dos módulos ADC

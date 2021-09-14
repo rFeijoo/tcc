@@ -3,9 +3,9 @@
 uint8_t events_toggle_bit(uint8_t bit, uint8_t mask)
 {
 	if ((bit & mask) == 1)
-		bit &= 0xFE;
+		bit &= ~mask;
 	else
-		bit |= 0x01;
+		bit |= mask;
 
 	return (bit);
 }
