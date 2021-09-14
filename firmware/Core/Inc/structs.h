@@ -24,6 +24,27 @@
 #define RMS_FFTH_LEVEL_LENGTH	24
 
 /**
+ *	@brief Definição da estrutura de GPIOs.
+ */
+typedef struct {
+	char *tag;
+
+	GPIO_TypeDef *Port;
+	uint16_t Pin;
+
+	uint8_t invert;
+} digital_IOs;
+
+/**
+ *	@brief Definição da estrutura do módulo DEBUG.
+ */
+typedef struct {
+	char *tag;
+
+	digital_IOs *probe_1, *probe_2, *probe_3;
+} debug_mod;
+
+/**
  *	@brief Definição da estrutura de medição para tensão e corrente.
  */
 typedef struct {
@@ -60,17 +81,6 @@ typedef struct {
 	uint8_t scnd_level_index;
 	uint8_t thrd_level_index;
 } power_and_energy;
-
-/**
- *	@brief Definição da estrutura do módulo DEBUG.
- */
-typedef struct {
-	char *tag;
-
-	GPIO_TypeDef *Port;
-
-	uint16_t LED1, LED2, LED3;
-} debug_mod;
 
 /**
  *	@brief Definição da estrutura do sistema fotovoltaico.

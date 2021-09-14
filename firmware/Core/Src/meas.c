@@ -21,9 +21,17 @@ photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, 
 	ph_struct->power_energy = meas_initialize_power_and_energy_objects();
 
 	if (debug_mod == NULL)
+	{
 		ph_struct->debugger = NULL;
+
+		printf("\t- Debugger not attached\n\n");
+	}
 	else
+	{
 		ph_struct->debugger = debug_mod;
+
+		printf("\t- Debugger attached\n\n");
+	}
 
 	return(ph_struct);
 }

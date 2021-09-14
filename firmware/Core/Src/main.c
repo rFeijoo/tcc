@@ -103,7 +103,7 @@ int main(void)
   MX_ADC5_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  printf("-- Starting System's Configuration\n");
+  printf("-- Starting System's Configuration\n\n");
 
   objects_def_init();
 

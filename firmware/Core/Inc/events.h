@@ -28,11 +28,11 @@
  *	8: reserva
  */
 
-debug_mod *events_initialize_debug_mod(char *tag, GPIO_TypeDef *Port, uint16_t LED1, uint16_t LED2, uint16_t LED3);
+debug_mod *events_initialize_debug_mod(char *tag, GPIO_TypeDef *Port, uint16_t Probe_1, uint16_t Probe_2, uint16_t Probe_3);
+
+digital_IOs *events_initialize_digital_ios(char *tag, GPIO_TypeDef *Port, uint16_t Pin, uint8_t invert_output);
 
 void events_handler(photovoltaic *ptr);
-
-void events_set_debugger(photovoltaic *ptr);
 
 void events_output_debugger(photovoltaic *ptr, uint8_t value);
 

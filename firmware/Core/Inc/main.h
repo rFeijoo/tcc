@@ -58,25 +58,25 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define B1_Pin GPIO_PIN_13
-#define B1_GPIO_Port GPIOC
-#define B1_EXTI_IRQn EXTI15_10_IRQn
-#define ADC1_IN1_Pin GPIO_PIN_0
-#define ADC1_IN1_GPIO_Port GPIOA
-#define ADC2_IN2_Pin GPIO_PIN_1
-#define ADC2_IN2_GPIO_Port GPIOA
+#define CELL_1_BTN_Pin GPIO_PIN_13
+#define CELL_1_BTN_GPIO_Port GPIOC
+#define CELL_1_BTN_EXTI_IRQn EXTI15_10_IRQn
+#define CELL_1_VOLTAGE_Pin GPIO_PIN_0
+#define CELL_1_VOLTAGE_GPIO_Port GPIOA
+#define CELL_1_CURRENT_Pin GPIO_PIN_1
+#define CELL_1_CURRENT_GPIO_Port GPIOA
 #define CELL_OUTPUT_Pin GPIO_PIN_5
 #define CELL_OUTPUT_GPIO_Port GPIOA
+#define CELL_1_DBG1_Pin GPIO_PIN_6
+#define CELL_1_DBG1_GPIO_Port GPIOA
+#define CELL_1_DBG2_Pin GPIO_PIN_7
+#define CELL_1_DBG2_GPIO_Port GPIOA
+#define CELL_1_DBG3_Pin GPIO_PIN_8
+#define CELL_1_DBG3_GPIO_Port GPIOA
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14
 #define T_SWCLK_GPIO_Port GPIOA
-#define DEBUG_LED1_Pin GPIO_PIN_3
-#define DEBUG_LED1_GPIO_Port GPIOB
-#define DEBUG_LED2_Pin GPIO_PIN_4
-#define DEBUG_LED2_GPIO_Port GPIOB
-#define DEBUG_LED3_Pin GPIO_PIN_5
-#define DEBUG_LED3_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 #define VCC					3.3
 #define ADC_RES_BITS		4095.0

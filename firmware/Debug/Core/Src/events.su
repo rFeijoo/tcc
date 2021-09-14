@@ -1,4 +1,4 @@
 events.c:3:12:events_initialize_debug_mod	32	static
-events.c:23:6:events_handler	16	static
-events.c:29:6:events_set_debugger	24	static
-events.c:59:6:events_output_debugger	16	static
+events.c:28:14:events_initialize_digital_ios	32	static
+events.c:48:6:events_handler	24	static
+events.c:78:6:events_output_debugger	16	static
