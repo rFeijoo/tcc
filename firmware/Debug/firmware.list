@@ -27,23 +27,23 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   ALLOC
  11 .ARM.attributes 00000030  00000000  00000000  000201e0  2**0
                   CONTENTS, READONLY
- 12 .debug_info   0001c90a  00000000  00000000  00020210  2**0
+ 12 .debug_info   0001c8e6  00000000  00000000  00020210  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 13 .debug_abbrev 00003335  00000000  00000000  0003cb1a  2**0
+ 13 .debug_abbrev 00003308  00000000  00000000  0003caf6  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 14 .debug_aranges 000012f0  00000000  00000000  0003fe50  2**3
+ 14 .debug_aranges 000012e8  00000000  00000000  0003fe00  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 15 .debug_ranges 00001188  00000000  00000000  00041140  2**3
+ 15 .debug_ranges 00001180  00000000  00000000  000410e8  2**3
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 16 .debug_macro  00029d94  00000000  00000000  000422c8  2**0
+ 16 .debug_macro  00029d94  00000000  00000000  00042268  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 17 .debug_line   00015a0c  00000000  00000000  0006c05c  2**0
+ 17 .debug_line   000159e9  00000000  00000000  0006bffc  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0010bad9  00000000  00000000  00081a68  2**0
+ 18 .debug_str    0010bae9  00000000  00000000  000819e5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  0018d541  2**0
+ 19 .comment      00000053  00000000  00000000  0018d4ce  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00006080  00000000  00000000  0018d594  2**2
+ 20 .debug_frame  0000605c  00000000  00000000  0018d524  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -1716,11 +1716,6 @@ void events_handler(photovoltaic *ptr)
 		events_set_debugger(ptr);
  80010e4:	6878      	ldr	r0, [r7, #4]
  80010e6:	f000 f804 	bl	80010f2 <events_set_debugger>
-	//	printf("Events Handler: ");
-	//	bin(cell->events_handler);
-	//	printf("\n");
-	//
-	//	HAL_Delay(1000);
 }
  80010ea:	bf00      	nop
  80010ec:	3708      	adds	r7, #8
@@ -1952,7 +1947,7 @@ void MX_GPIO_Init(void)
  8001264:	687b      	ldr	r3, [r7, #4]
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(CELL_OUTPUT_GPIO_Port, CELL_OUTPUT_Pin, GPIO_PIN_RESET);
  8001266:	2200      	movs	r2, #0
  8001268:	2120      	movs	r1, #32
  800126a:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
@@ -1982,7 +1977,7 @@ void MX_GPIO_Init(void)
  8001292:	f003 f973 	bl	800457c <HAL_GPIO_Init>
 
   /*Configure GPIO pin : PtPin */
-  GPIO_InitStruct.Pin = LD2_Pin;
+  GPIO_InitStruct.Pin = CELL_OUTPUT_Pin;
  8001296:	2320      	movs	r3, #32
  8001298:	617b      	str	r3, [r7, #20]
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -1994,7 +1989,7 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
  80012a2:	2300      	movs	r3, #0
  80012a4:	623b      	str	r3, [r7, #32]
-  HAL_GPIO_Init(LD2_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(CELL_OUTPUT_GPIO_Port, &GPIO_InitStruct);
  80012a6:	f107 0314 	add.w	r3, r7, #20
  80012aa:	4619      	mov	r1, r3
  80012ac:	f04f 4090 	mov.w	r0, #1207959552	; 0x48000000
@@ -3602,9 +3597,6 @@ void objects_def_exti_gpio(uint16_t GPIO_Pin)
  8001d9c:	20000354 	.word	0x20000354
 
 08001da0 <objects_def_loop>:
-
-    printf("%d", n % 2);
-}
 
 void objects_def_loop(void)
 {
@@ -12848,7 +12840,7 @@ HAL_StatusTypeDef HAL_RCC_ClockConfig(RCC_ClkInitTypeDef  *RCC_ClkInitStruct, ui
  80052d8:	40022000 	.word	0x40022000
  80052dc:	40021000 	.word	0x40021000
  80052e0:	04c4b400 	.word	0x04c4b400
- 80052e4:	0800922c 	.word	0x0800922c
+ 80052e4:	08009228 	.word	0x08009228
  80052e8:	20000000 	.word	0x20000000
  80052ec:	20000004 	.word	0x20000004
 
@@ -16505,11 +16497,11 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8006a0c:	e7ee      	b.n	80069ec <_printf_float+0x2b8>
  8006a0e:	bf00      	nop
  8006a10:	7fefffff 	.word	0x7fefffff
- 8006a14:	08009240 	.word	0x08009240
- 8006a18:	08009244 	.word	0x08009244
- 8006a1c:	0800924c 	.word	0x0800924c
- 8006a20:	08009248 	.word	0x08009248
- 8006a24:	08009250 	.word	0x08009250
+ 8006a14:	0800923c 	.word	0x0800923c
+ 8006a18:	08009240 	.word	0x08009240
+ 8006a1c:	08009248 	.word	0x08009248
+ 8006a20:	08009244 	.word	0x08009244
+ 8006a24:	0800924c 	.word	0x0800924c
  8006a28:	9a0a      	ldr	r2, [sp, #40]	; 0x28
  8006a2a:	6da3      	ldr	r3, [r4, #88]	; 0x58
  8006a2c:	429a      	cmp	r2, r3
@@ -17000,8 +16992,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8006eb8:	f104 0619 	add.w	r6, r4, #25
  8006ebc:	e7f5      	b.n	8006eaa <_printf_i+0x22e>
  8006ebe:	bf00      	nop
- 8006ec0:	08009252 	.word	0x08009252
- 8006ec4:	08009263 	.word	0x08009263
+ 8006ec0:	0800924e 	.word	0x0800924e
+ 8006ec4:	0800925f 	.word	0x0800925f
 
 08006ec8 <iprintf>:
  8006ec8:	b40f      	push	{r0, r1, r2, r3}
@@ -17121,9 +17113,9 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8006fc2:	6022      	str	r2, [r4, #0]
  8006fc4:	701d      	strb	r5, [r3, #0]
  8006fc6:	e7db      	b.n	8006f80 <_puts_r+0x88>
- 8006fc8:	08009328 	.word	0x08009328
- 8006fcc:	08009348 	.word	0x08009348
- 8006fd0:	08009308 	.word	0x08009308
+ 8006fc8:	08009324 	.word	0x08009324
+ 8006fcc:	08009344 	.word	0x08009344
+ 8006fd0:	08009304 	.word	0x08009304
 
 08006fd4 <puts>:
  8006fd4:	4b02      	ldr	r3, [pc, #8]	; (8006fe0 <puts+0xc>)
@@ -17221,9 +17213,9 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8007094:	f04f 37ff 	mov.w	r7, #4294967295	; 0xffffffff
  8007098:	e7ea      	b.n	8007070 <__swbuf_r+0x6c>
  800709a:	bf00      	nop
- 800709c:	08009328 	.word	0x08009328
- 80070a0:	08009348 	.word	0x08009348
- 80070a4:	08009308 	.word	0x08009308
+ 800709c:	08009324 	.word	0x08009324
+ 80070a0:	08009344 	.word	0x08009344
+ 80070a4:	08009304 	.word	0x08009304
 
 080070a8 <__swsetup_r>:
  80070a8:	4b32      	ldr	r3, [pc, #200]	; (8007174 <__swsetup_r+0xcc>)
@@ -17315,9 +17307,9 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8007170:	e7f7      	b.n	8007162 <__swsetup_r+0xba>
  8007172:	bf00      	nop
  8007174:	2000000c 	.word	0x2000000c
- 8007178:	08009328 	.word	0x08009328
- 800717c:	08009348 	.word	0x08009348
- 8007180:	08009308 	.word	0x08009308
+ 8007178:	08009324 	.word	0x08009324
+ 800717c:	08009344 	.word	0x08009344
+ 8007180:	08009304 	.word	0x08009304
 
 08007184 <quorem>:
  8007184:	e92d 4ff7 	stmdb	sp!, {r0, r1, r2, r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -17714,15 +17706,15 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  800758c:	3fc68a28 	.word	0x3fc68a28
  8007590:	509f79fb 	.word	0x509f79fb
  8007594:	3fd34413 	.word	0x3fd34413
- 8007598:	08009281 	.word	0x08009281
- 800759c:	08009298 	.word	0x08009298
+ 8007598:	0800927d 	.word	0x0800927d
+ 800759c:	08009294 	.word	0x08009294
  80075a0:	7ff00000 	.word	0x7ff00000
- 80075a4:	0800927d 	.word	0x0800927d
- 80075a8:	08009274 	.word	0x08009274
- 80075ac:	08009251 	.word	0x08009251
+ 80075a4:	08009279 	.word	0x08009279
+ 80075a8:	08009270 	.word	0x08009270
+ 80075ac:	0800924d 	.word	0x0800924d
  80075b0:	3ff80000 	.word	0x3ff80000
  80075b4:	080093f0 	.word	0x080093f0
- 80075b8:	080092f7 	.word	0x080092f7
+ 80075b8:	080092f3 	.word	0x080092f3
  80075bc:	6a63      	ldr	r3, [r4, #36]	; 0x24
  80075be:	9a00      	ldr	r2, [sp, #0]
  80075c0:	601a      	str	r2, [r3, #0]
@@ -18599,9 +18591,9 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8007e64:	f000 faa8 	bl	80083b8 <__multadd>
  8007e68:	4683      	mov	fp, r0
  8007e6a:	e7eb      	b.n	8007e44 <_dtoa_r+0xba4>
- 8007e6c:	080092f7 	.word	0x080092f7
- 8007e70:	08009250 	.word	0x08009250
- 8007e74:	08009274 	.word	0x08009274
+ 8007e6c:	080092f3 	.word	0x080092f3
+ 8007e70:	0800924c 	.word	0x0800924c
+ 8007e74:	08009270 	.word	0x08009270
 
 08007e78 <__sflush_r>:
  8007e78:	898a      	ldrh	r2, [r1, #12]
@@ -18777,9 +18769,9 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8007fea:	bf08      	it	eq
  8007fec:	68ec      	ldreq	r4, [r5, #12]
  8007fee:	e7da      	b.n	8007fa6 <_fflush_r+0x22>
- 8007ff0:	08009328 	.word	0x08009328
- 8007ff4:	08009348 	.word	0x08009348
- 8007ff8:	08009308 	.word	0x08009308
+ 8007ff0:	08009324 	.word	0x08009324
+ 8007ff4:	08009344 	.word	0x08009344
+ 8007ff8:	08009304 	.word	0x08009304
 
 08007ffc <std>:
  8007ffc:	2300      	movs	r3, #0
@@ -18904,7 +18896,7 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  800810e:	61a3      	str	r3, [r4, #24]
  8008110:	e7d2      	b.n	80080b8 <__sinit+0xc>
  8008112:	bf00      	nop
- 8008114:	0800923c 	.word	0x0800923c
+ 8008114:	08009238 	.word	0x08009238
  8008118:	08008045 	.word	0x08008045
 
 0800811c <__sfp>:
@@ -18959,7 +18951,7 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  800819a:	603b      	str	r3, [r7, #0]
  800819c:	e7ee      	b.n	800817c <__sfp+0x60>
  800819e:	bf00      	nop
- 80081a0:	0800923c 	.word	0x0800923c
+ 80081a0:	08009238 	.word	0x08009238
  80081a4:	ffff0001 	.word	0xffff0001
 
 080081a8 <_fwalk_reent>:
@@ -19168,8 +19160,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8008364:	e9c0 3303 	strd	r3, r3, [r0, #12]
  8008368:	e7f7      	b.n	800835a <_Balloc+0x66>
  800836a:	bf00      	nop
- 800836c:	08009281 	.word	0x08009281
- 8008370:	08009368 	.word	0x08009368
+ 800836c:	0800927d 	.word	0x0800927d
+ 8008370:	08009364 	.word	0x08009364
 
 08008374 <_Bfree>:
  8008374:	b570      	push	{r4, r5, r6, lr}
@@ -19197,8 +19189,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  80083a8:	6021      	str	r1, [r4, #0]
  80083aa:	f843 4022 	str.w	r4, [r3, r2, lsl #2]
  80083ae:	bd70      	pop	{r4, r5, r6, pc}
- 80083b0:	08009281 	.word	0x08009281
- 80083b4:	08009368 	.word	0x08009368
+ 80083b0:	0800927d 	.word	0x0800927d
+ 80083b4:	08009364 	.word	0x08009364
 
 080083b8 <__multadd>:
  80083b8:	e92d 41f0 	stmdb	sp!, {r4, r5, r6, r7, r8, lr}
@@ -19254,8 +19246,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  800843c:	4620      	mov	r0, r4
  800843e:	e8bd 81f0 	ldmia.w	sp!, {r4, r5, r6, r7, r8, pc}
  8008442:	bf00      	nop
- 8008444:	080092f7 	.word	0x080092f7
- 8008448:	08009368 	.word	0x08009368
+ 8008444:	080092f3 	.word	0x080092f3
+ 8008448:	08009364 	.word	0x08009364
 
 0800844c <__hi0bits>:
  800844c:	0c03      	lsrs	r3, r0, #16
@@ -19349,8 +19341,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  800850a:	6103      	str	r3, [r0, #16]
  800850c:	bd10      	pop	{r4, pc}
  800850e:	bf00      	nop
- 8008510:	080092f7 	.word	0x080092f7
- 8008514:	08009368 	.word	0x08009368
+ 8008510:	080092f3 	.word	0x080092f3
+ 8008514:	08009364 	.word	0x08009364
 
 08008518 <__multiply>:
  8008518:	e92d 4ff0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, fp, lr}
@@ -19470,8 +19462,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8008656:	3f01      	subs	r7, #1
  8008658:	e7a1      	b.n	800859e <__multiply+0x86>
  800865a:	bf00      	nop
- 800865c:	080092f7 	.word	0x080092f7
- 8008660:	08009368 	.word	0x08009368
+ 800865c:	080092f3 	.word	0x080092f3
+ 8008660:	08009364 	.word	0x08009364
 
 08008664 <__pow5mult>:
  8008664:	e92d 43f8 	stmdb	sp!, {r3, r4, r5, r6, r7, r8, r9, lr}
@@ -19540,8 +19532,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8008706:	e8bd 83f8 	ldmia.w	sp!, {r3, r4, r5, r6, r7, r8, r9, pc}
  800870a:	bf00      	nop
  800870c:	080094b8 	.word	0x080094b8
- 8008710:	08009281 	.word	0x08009281
- 8008714:	08009368 	.word	0x08009368
+ 8008710:	0800927d 	.word	0x0800927d
+ 8008714:	08009364 	.word	0x08009364
 
 08008718 <__lshift>:
  8008718:	e92d 47f0 	stmdb	sp!, {r4, r5, r6, r7, r8, r9, sl, lr}
@@ -19620,8 +19612,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  80087e2:	d8f9      	bhi.n	80087d8 <__lshift+0xc0>
  80087e4:	e7ea      	b.n	80087bc <__lshift+0xa4>
  80087e6:	bf00      	nop
- 80087e8:	080092f7 	.word	0x080092f7
- 80087ec:	08009368 	.word	0x08009368
+ 80087e8:	080092f3 	.word	0x080092f3
+ 80087ec:	08009364 	.word	0x08009364
 
 080087f0 <__mcmp>:
  80087f0:	b530      	push	{r4, r5, lr}
@@ -19746,8 +19738,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  800892a:	e7e0      	b.n	80088ee <__mdiff+0xc6>
  800892c:	3e01      	subs	r6, #1
  800892e:	e7ea      	b.n	8008906 <__mdiff+0xde>
- 8008930:	080092f7 	.word	0x080092f7
- 8008934:	08009368 	.word	0x08009368
+ 8008930:	080092f3 	.word	0x080092f3
+ 8008934:	08009364 	.word	0x08009364
 
 08008938 <__d2b>:
  8008938:	e92d 43f7 	stmdb	sp!, {r0, r1, r2, r4, r5, r6, r7, r8, r9, lr}
@@ -19816,8 +19808,8 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  80089de:	f7ff fd35 	bl	800844c <__hi0bits>
  80089e2:	ebc0 1042 	rsb	r0, r0, r2, lsl #5
  80089e6:	e7df      	b.n	80089a8 <__d2b+0x70>
- 80089e8:	080092f7 	.word	0x080092f7
- 80089ec:	08009368 	.word	0x08009368
+ 80089e8:	080092f3 	.word	0x080092f3
+ 80089ec:	08009364 	.word	0x08009364
 
 080089f0 <_calloc_r>:
  80089f0:	b513      	push	{r0, r1, r4, lr}
@@ -20114,9 +20106,9 @@ __weak void HAL_TIMEx_TransitionErrorCallback(TIM_HandleTypeDef *htim)
  8008c98:	f7fd fff0 	bl	8006c7c <_printf_i>
  8008c9c:	e7e4      	b.n	8008c68 <_vfiprintf_r+0x208>
  8008c9e:	bf00      	nop
- 8008ca0:	08009328 	.word	0x08009328
- 8008ca4:	08009348 	.word	0x08009348
- 8008ca8:	08009308 	.word	0x08009308
+ 8008ca0:	08009324 	.word	0x08009324
+ 8008ca4:	08009344 	.word	0x08009344
+ 8008ca8:	08009304 	.word	0x08009304
  8008cac:	080094c4 	.word	0x080094c4
  8008cb0:	080094ce 	.word	0x080094ce
  8008cb4:	08006735 	.word	0x08006735

@@ -65,8 +65,8 @@ void Error_Handler(void);
 #define ADC1_IN1_GPIO_Port GPIOA
 #define ADC2_IN2_Pin GPIO_PIN_1
 #define ADC2_IN2_GPIO_Port GPIOA
-#define LD2_Pin GPIO_PIN_5
-#define LD2_GPIO_Port GPIOA
+#define CELL_OUTPUT_Pin GPIO_PIN_5
+#define CELL_OUTPUT_GPIO_Port GPIOA
 #define T_SWDIO_Pin GPIO_PIN_13
 #define T_SWDIO_GPIO_Port GPIOA
 #define T_SWCLK_Pin GPIO_PIN_14

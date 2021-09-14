@@ -24,14 +24,6 @@ void events_handler(photovoltaic *ptr)
 {
 	if (ptr->debugger != NULL)
 		events_set_debugger(ptr);
-
-	//	HAL_GPIO_WritePin(LD2_GPIO_Port, LD2_Pin, 0x01 & cell->events_handler);
-	//
-	//	printf("Events Handler: ");
-	//	bin(cell->events_handler);
-	//	printf("\n");
-	//
-	//	HAL_Delay(1000);
 }
 
 void events_set_debugger(photovoltaic *ptr)

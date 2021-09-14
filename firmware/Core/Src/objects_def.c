@@ -23,14 +23,6 @@ void objects_def_exti_gpio(uint16_t GPIO_Pin)
 		meas_decouple_system(cell);
 }
 
-void bin(uint8_t n)
-{
-    if (n > 1)
-        bin(n / 2);
-
-    printf("%d", n % 2);
-}
-
 void objects_def_loop(void)
 {
 	events_handler(cell);
