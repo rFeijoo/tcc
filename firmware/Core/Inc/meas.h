@@ -16,6 +16,7 @@
 #include "tim.h"
 #include "structs.h"
 #include "events.h"
+#include "lcd_16x2.h"
 
 /**
  *	@brief Definições gerais do sistema.

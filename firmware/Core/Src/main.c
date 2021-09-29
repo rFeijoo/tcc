@@ -20,6 +20,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
+#include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
 
@@ -29,6 +30,7 @@
 #include "meas.h"
 #include "objects_def.h"
 #include "events.h"
+#include "lcd_16x2.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -102,12 +104,24 @@ int main(void)
   MX_ADC2_Init();
   MX_ADC5_Init();
   MX_TIM2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   printf("-- Starting System's Configuration\n\n");
 
   objects_def_init();
 
   HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
+
+  if (lcd16x2_i2c_init(&hi2c1))
+  {
+	  printf("Display LCD 16x2 initialized\n");
+
+	  lcd16x2_i2c_setCursor(0, 6);
+	  lcd16x2_i2c_printf("TCC2");
+	  HAL_Delay(2000);
+  	 }
+  else
+	  Error_Handler();
 
   HAL_TIM_Base_Start_IT(&htim1);
   HAL_TIM_Base_Start_IT(&htim2);
@@ -172,7 +186,9 @@ void SystemClock_Config(void)
   }
   /** Initializes the peripherals clocks
   */
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12|RCC_PERIPHCLK_ADC345;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_ADC12
+                              |RCC_PERIPHCLK_ADC345;
+  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
   PeriphClkInit.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
   PeriphClkInit.Adc345ClockSelection = RCC_ADC345CLKSOURCE_SYSCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)

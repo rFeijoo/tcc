@@ -146,15 +146,17 @@ void meas_voltage_aggregation_handler(photovoltaic *ptr)
 
 	if (ptr->voltage->frst_level_index == RMS_FRST_LEVEL_LENGTH)
 	{
-		ptr->voltage->scnd_level[ptr->voltage->scnd_level_index++] = meas_quadratic_average(ptr->voltage->frst_level, RMS_FRST_LEVEL_LENGTH);
+		ptr->voltage->scnd_level_value = meas_quadratic_average(ptr->voltage->frst_level, RMS_FRST_LEVEL_LENGTH);
+
+		ptr->voltage->scnd_level[ptr->voltage->scnd_level_index++] = ptr->voltage->scnd_level_value;
 
 		if (ptr->voltage->scnd_level_index == RMS_SCND_LEVEL_LENGTH)
 		{
-			ptr->voltage->thrd_level[ptr->voltage->thrd_level_index] = meas_quadratic_average(ptr->voltage->scnd_level, RMS_SCND_LEVEL_LENGTH);
+			ptr->voltage->thrd_level_value = meas_quadratic_average(ptr->voltage->scnd_level, RMS_SCND_LEVEL_LENGTH);
 
 			meas_verify_voltage_triggers(ptr);
 
-			ptr->voltage->thrd_level_index++;
+			ptr->voltage->thrd_level[ptr->voltage->thrd_level_index++] = ptr->voltage->thrd_level_value;
 
 			if (ptr->voltage->thrd_level_index == RMS_THRD_LEVEL_LENGTH)
 			{
@@ -186,15 +188,17 @@ void meas_current_aggregation_handler(photovoltaic *ptr)
 
 	if (ptr->current->frst_level_index == RMS_FRST_LEVEL_LENGTH)
 	{
-		ptr->current->scnd_level[ptr->current->scnd_level_index++] = meas_quadratic_average(ptr->current->frst_level, RMS_FRST_LEVEL_LENGTH);
+		ptr->current->scnd_level_value = meas_quadratic_average(ptr->current->frst_level, RMS_FRST_LEVEL_LENGTH);
+
+		ptr->current->scnd_level[ptr->current->scnd_level_index++] = ptr->current->scnd_level_value;
 
 		if (ptr->current->scnd_level_index == RMS_SCND_LEVEL_LENGTH)
 		{
-			ptr->current->thrd_level[ptr->current->thrd_level_index] = meas_quadratic_average(ptr->current->scnd_level, RMS_SCND_LEVEL_LENGTH);
+			ptr->current->thrd_level_value = meas_quadratic_average(ptr->current->scnd_level, RMS_SCND_LEVEL_LENGTH);
 
 			meas_verify_current_triggers(ptr);
 
-			ptr->current->thrd_level_index++;
+			ptr->current->thrd_level[ptr->current->thrd_level_index++] = ptr->current->thrd_level_value;
 
 			if (ptr->current->thrd_level_index == RMS_THRD_LEVEL_LENGTH)
 			{
@@ -224,26 +228,26 @@ void meas_verify_voltage_triggers(photovoltaic *ptr)
 {
 	// Verifica se o evento de sobretensão está iniciado, para resetá-lo
 	if ((ptr->events_handler & EVENT_OVERVOLTAGE) == EVENT_OVERVOLTAGE &&
-			ptr->voltage->thrd_level[ptr->voltage->thrd_level_index] <= OVERVOLTAGE_RELEASE_LIMIT)
+			ptr->voltage->thrd_level_value <= OVERVOLTAGE_RELEASE_LIMIT)
 	{
 		ptr->events_handler &= ~EVENT_OVERVOLTAGE;
 	}
 	// Verifica se o evento de sobretensão está resetado, para iniciá-lo
 	else if ((ptr->events_handler & EVENT_OVERVOLTAGE) == 0x00 &&
-				ptr->voltage->thrd_level[ptr->voltage->thrd_level_index] >= OVERVOLTAGE_HOLD_LIMIT)
+				ptr->voltage->thrd_level_value >= OVERVOLTAGE_HOLD_LIMIT)
 	{
 		ptr->events_handler |= EVENT_OVERVOLTAGE;
 	}
 
 	// Verifica se o evento de subtensão está iniciado, para resetá-lo
 	if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == EVENT_UNDERVOLTAGE &&
-			ptr->voltage->thrd_level[ptr->voltage->thrd_level_index] >= UNDERVOLTAGE_RELEASE_LIMIT)
+			ptr->voltage->thrd_level_value >= UNDERVOLTAGE_RELEASE_LIMIT)
 	{
 		ptr->events_handler &= ~EVENT_UNDERVOLTAGE;
 	}
 	// Verifica se o evento de subtensão está resetado, para iniciá-lo
 	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == 0x00 &&
-				ptr->voltage->thrd_level[ptr->voltage->thrd_level_index] <= UNDERVOLTAGE_HOLD_LIMIT)
+				ptr->voltage->thrd_level_value <= UNDERVOLTAGE_HOLD_LIMIT)
 	{
 		ptr->events_handler |= EVENT_UNDERVOLTAGE;
 	}
@@ -253,13 +257,13 @@ void meas_verify_current_triggers(photovoltaic *ptr)
 {
 	// Verifica se o evento de sobrecorrente está iniciado, para resetá-lo
 	if ((ptr->events_handler & EVENT_OVERCURRENT) == EVENT_OVERCURRENT &&
-			ptr->current->thrd_level[ptr->current->thrd_level_index] <= OVERCURRENT_RELEASE_LIMIT)
+			ptr->current->thrd_level_value <= OVERCURRENT_RELEASE_LIMIT)
 	{
 		ptr->events_handler &= 0xFB;
 	}
 	// Verifica se o evento de sobrecorrente está resetado, para iniciá-lo
 	else if ((ptr->events_handler & EVENT_OVERCURRENT) == 0x00 &&
-				ptr->current->thrd_level[ptr->current->thrd_level_index] >= OVERCURRENT_HOLD_LIMIT)
+			ptr->current->thrd_level_value >= OVERCURRENT_HOLD_LIMIT)
 	{
 		ptr->events_handler |= 0x04;
 	}
@@ -279,6 +283,9 @@ void meas_compute_power_and_energy(photovoltaic *ptr)
 
 	// Conversão KW -> (KW / h)
 	ptr->power_energy->energy += (power_3s / 3600.0);
+
+	// Atualiza o Display LCD 16X2
+	lcd16x2_i2c_update(ptr);
 
 	// Protocolo de agregação em multi-camadas da potência produzida
 	ptr->power_energy->frst_level[ptr->power_energy->frst_level_index++] = power_3s;

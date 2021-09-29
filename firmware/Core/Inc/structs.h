@@ -63,6 +63,9 @@ typedef struct {
 	uint8_t thrd_level_index;
 	uint8_t frth_level_index;
 	uint8_t ffth_level_index;
+
+	float scnd_level_value;
+	float thrd_level_value;
 } rms_measurement;
 
 /**

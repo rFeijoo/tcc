@@ -1,0 +1,15 @@
+lcd_16x2.c:6:13:lcd16x2_i2c_sendCommand	32	static
+lcd_16x2.c:22:13:lcd16x2_i2c_sendData	32	static
+lcd_16x2.c:38:5:lcd16x2_i2c_init	16	static
+lcd_16x2.c:87:6:lcd16x2_i2c_setCursor	24	static
+lcd_16x2.c:105:6:lcd16x2_i2c_1stLine	8	static
+lcd_16x2.c:110:6:lcd16x2_i2c_2ndLine	8	static
+lcd_16x2.c:115:6:lcd16x2_i2c_TwoLines	8	static
+lcd_16x2.c:120:6:lcd16x2_i2c_OneLine	8	static
+lcd_16x2.c:125:6:lcd16x2_i2c_cursorShow	16	static
+lcd_16x2.c:137:6:lcd16x2_i2c_clear	8	static
+lcd_16x2.c:144:6:lcd16x2_i2c_display	16	static
+lcd_16x2.c:156:6:lcd16x2_i2c_shiftRight	24	static
+lcd_16x2.c:164:6:lcd16x2_i2c_shiftLeft	24	static
+lcd_16x2.c:172:6:lcd16x2_i2c_printf	48	static
+lcd_16x2.c:189:6:lcd16x2_i2c_update	16	static

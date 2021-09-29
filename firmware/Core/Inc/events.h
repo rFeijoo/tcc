@@ -4,7 +4,6 @@
  * @brief Arquivo de definições da estrutura do módulo gerenciador de eventos.
  */
 
-
 #ifndef _EVENTS_MANAGER_H_
 #define _EVENTS_MANAGER_H_
 
