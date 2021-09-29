@@ -15,12 +15,14 @@
 #include "adc.h"
 #include "tim.h"
 #include "structs.h"
+#include "events.h"
 
 /**
  *	@brief Definições gerais do sistema.
  */
-#define SYSTEM_VCC		3.3
-#define ADC_RESOLUTION	4095.0
+#define SYSTEM_VCC			3.3
+#define ADC_RESOLUTION		4095.0
+#define BTN_DEBOUNCE_DELAY 	50
 
 /**
  *	@brief Definição dos ganhos dos circuitos de medição em regime permanente.
@@ -31,11 +33,17 @@
 /**
  *	@brief Definição dos limiares de tensão e corrente.
  */
-#define VOLTAGE_UPPER_LIMIT 475.0
-#define VOLTAGE_LOWER_LIMIT	25.00
-#define CURRENT_UPPER_LIMIT	19.00
-#define CURRENT_LOWER_LIMIT	0.000
-#define TEMPERATURE_LIMIT	70.00
+#define OVERVOLTAGE_HOLD_LIMIT		475.0
+#define OVERVOLTAGE_RELEASE_LIMIT	450.0
+
+#define UNDERVOLTAGE_HOLD_LIMIT		25.00
+#define UNDERVOLTAGE_RELEASE_LIMIT	50.00
+
+#define OVERCURRENT_HOLD_LIMIT		19.00
+#define OVERCURRENT_RELEASE_LIMIT	18.00
+
+#define OVERHEAT_HOLD_LIMIT			75.00
+#define OVERHEAT_RELEASE_LIMIT		50.00
 
 /**
  *	@brief Definição do divisor de clock para computar potência e energia.
@@ -49,9 +57,9 @@
 #define TEMP_SENSOR_VREF	0.7600
 #define TEMP_SENSOR_SLOPE	0.0025
 
-photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, debug_mod	*debug_mod);
+photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *pos_out, digital_IOs *neg_out, digital_IOs *led_out, debug_mod *debug_mod);
 
-rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC, uint16_t high_trigger, uint16_t low_trigger);
+rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC);
 
 power_and_energy *meas_initialize_power_and_energy_objects(void);
 
@@ -67,7 +75,9 @@ void meas_verify_voltage_triggers(photovoltaic *ptr);
 
 void meas_verify_current_triggers(photovoltaic *ptr);
 
-void meas_aggregation_handler(rms_measurement *ptr, float value);
+void meas_voltage_aggregation_handler(photovoltaic *ptr);
+
+void meas_current_aggregation_handler(photovoltaic *ptr);
 
 void meas_compute_power_and_energy(photovoltaic *ptr);
 

@@ -47,36 +47,71 @@ digital_IOs *events_initialize_digital_ios(char *tag, GPIO_TypeDef *Port, uint16
 
 void events_handler(photovoltaic *ptr)
 {
-	uint8_t output = 0x00;
-
 	// Seccionamento do circuito
-	if ((ptr->events_handler & 0x01) == 0x01)
-		output = 0x1;
+	if ((ptr->events_handler & EVENT_USER_BREAK) == EVENT_USER_BREAK)
+	{
+		events_output_relays(ptr, 0);
+		events_output_debugger(ptr, 0x1);
+	}
 	// Sobretensão
-	else if ((ptr->events_handler & 0x02) == 0x02)
-		output = 0x2;
+	else if ((ptr->events_handler & EVENT_OVERVOLTAGE) == EVENT_OVERVOLTAGE)
+	{
+		events_output_relays(ptr, 0);
+		events_output_debugger(ptr, 0x2);
+	}
 	// Sobrecorrente
-	else if ((ptr->events_handler & 0x04) == 0x04)
-		output = 0x3;
+	else if ((ptr->events_handler & EVENT_OVERCURRENT) == EVENT_OVERCURRENT)
+	{
+		events_output_relays(ptr, 0);
+		events_output_debugger(ptr, 0x3);
+	}
 	// Subtensão
-	else if ((ptr->events_handler & 0x08) == 0x08)
-		output = 0x4;
+	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == EVENT_UNDERVOLTAGE)
+	{
+		events_output_relays(ptr, 1);
+		events_output_debugger(ptr, 0x4);
+	}
 	// Superaquecimento
-	else if ((ptr->events_handler & 0x10) == 0x10)
-		output = 0x5;
-	// Estado de degradação do painel solar
-	else if ((ptr->events_handler & 0x20) == 0x20)
-		output = 0x6;
+	else if ((ptr->events_handler & EVENT_OVERHEAT) == EVENT_OVERHEAT)
+	{
+		events_output_relays(ptr, 1);
+		events_output_debugger(ptr, 0x5);
+	}
 	// Fim de vida util do DPS
-	else if ((ptr->events_handler & 0x40) == 0x40)
-		output = 0x7;
+	else if ((ptr->events_handler & EVENT_DPS_LIFESPAN) == EVENT_DPS_LIFESPAN)
+	{
+		events_output_relays(ptr, 1);
+		events_output_debugger(ptr, 0x6);
+	}
+	// Nenhum evento identificado
+	else
+	{
+		events_output_relays(ptr, 1);
+		events_output_debugger(ptr, 0x0);
+	}
+}
 
-	if (ptr->debugger != NULL)
-		events_output_debugger(ptr, output);
+void events_output_relays(photovoltaic *ptr, uint8_t value)
+{
+	// Relé (-)
+	if (ptr->neg_out->invert)
+		HAL_GPIO_WritePin(ptr->neg_out->Port, ptr->neg_out->Pin, ~value);
+	else
+		HAL_GPIO_WritePin(ptr->neg_out->Port, ptr->neg_out->Pin, value);
+
+	// Relé (+)
+	if (ptr->pos_out->invert)
+		HAL_GPIO_WritePin(ptr->pos_out->Port, ptr->pos_out->Pin, ~value);
+	else
+		HAL_GPIO_WritePin(ptr->pos_out->Port, ptr->pos_out->Pin, value);
+
 }
 
 void events_output_debugger(photovoltaic *ptr, uint8_t value)
 {
+	if (ptr->debugger == NULL)
+		return;
+
 	// LSB
 	HAL_GPIO_WritePin(ptr->debugger->probe_1->Port, ptr->debugger->probe_1->Pin, 0x1 & value);
 

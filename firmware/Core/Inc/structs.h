@@ -63,8 +63,6 @@ typedef struct {
 	uint8_t thrd_level_index;
 	uint8_t frth_level_index;
 	uint8_t ffth_level_index;
-
-	uint8_t high_trigger, low_trigger;
 } rms_measurement;
 
 /**
@@ -95,10 +93,11 @@ typedef struct {
 
 	power_and_energy *power_energy;
 
+	digital_IOs *pos_out, *neg_out, *led_out;
+
 	debug_mod *debugger;
 
 	uint16_t pe_interval_cnt;
-
 	uint8_t events_handler;
 } photovoltaic;
 
