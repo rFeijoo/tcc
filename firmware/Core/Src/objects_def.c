@@ -6,7 +6,7 @@ debug_mod	 *dbg;
 
 void objects_def_init(void)
 {
-	dbg  = events_initialize_debug_mod("Debug Mod 1", GPIOA, CELL_1_DBG1_Pin, CELL_1_DBG2_Pin, CELL_1_DBG3_Pin);
+	dbg  = events_initialize_debug_mod("Debug Mod 1", GPIOC, CELL_1_DBG1_Pin, CELL_1_DBG2_Pin, CELL_1_DBG3_Pin);
 
 	relay_pos  = events_initialize_digital_ios("Output Relay (+)", GPIOA, CELL_1_OUT_POS_Pin, 0);
 	relay_neg  = events_initialize_digital_ios("Output Relay (-)", GPIOA, CELL_1_OUT_NEG_Pin, 0);

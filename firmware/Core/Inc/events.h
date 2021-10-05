@@ -17,14 +17,14 @@
  *
  *	Handler Type: uint8_t [8 7 6 5 4 3 2 1]
  *
+ *	0: nenhum evento
  *	1: seccionamento
  *	2: sobretensão
  *	3: sobrecorrente
  *	4: subtensão
  *	5: superaquecimento
  *	6: fim de vida útil do DPS
- *	7: reserva
- *	8: reserva
+ *	7: degradação do painel solar
  */
 #define EVENT_USER_BREAK	0x01
 #define EVENT_OVERVOLTAGE	0x02

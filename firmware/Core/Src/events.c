@@ -68,7 +68,7 @@ void events_handler(photovoltaic *ptr)
 	// Subtensão
 	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == EVENT_UNDERVOLTAGE)
 	{
-		events_output_relays(ptr, 1);
+		events_output_relays(ptr, 0);
 		events_output_debugger(ptr, 0x4);
 	}
 	// Superaquecimento
@@ -80,7 +80,7 @@ void events_handler(photovoltaic *ptr)
 	// Fim de vida util do DPS
 	else if ((ptr->events_handler & EVENT_DPS_LIFESPAN) == EVENT_DPS_LIFESPAN)
 	{
-		events_output_relays(ptr, 1);
+		events_output_relays(ptr, 0);
 		events_output_debugger(ptr, 0x6);
 	}
 	// Nenhum evento identificado
@@ -113,10 +113,10 @@ void events_output_debugger(photovoltaic *ptr, uint8_t value)
 		return;
 
 	// LSB
-	HAL_GPIO_WritePin(ptr->debugger->probe_1->Port, ptr->debugger->probe_1->Pin, 0x1 & value);
+	HAL_GPIO_WritePin(ptr->debugger->probe_3->Port, ptr->debugger->probe_3->Pin, 0x1 & value);
 
 	HAL_GPIO_WritePin(ptr->debugger->probe_2->Port, ptr->debugger->probe_2->Pin, 0x2 & value);
 
 	// MSB
-	HAL_GPIO_WritePin(ptr->debugger->probe_3->Port, ptr->debugger->probe_3->Pin, 0x4 & value);
+	HAL_GPIO_WritePin(ptr->debugger->probe_1->Port, ptr->debugger->probe_1->Pin, 0x4 & value);
 }
