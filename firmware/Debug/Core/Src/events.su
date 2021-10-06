@@ -2,4 +2,4 @@ events.c:3:12:events_initialize_debug_mod	32	static
 events.c:28:14:events_initialize_digital_ios	32	static
 events.c:48:6:events_handler	16	static
 events.c:94:6:events_output_relays	16	static
-events.c:110:6:events_output_debugger	16	static
+events.c:116:6:events_output_debugger	16	static

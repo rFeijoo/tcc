@@ -105,6 +105,12 @@ void events_output_relays(photovoltaic *ptr, uint8_t value)
 	else
 		HAL_GPIO_WritePin(ptr->pos_out->Port, ptr->pos_out->Pin, value);
 
+	// LED integrado
+	if (ptr->led_out->invert)
+		HAL_GPIO_WritePin(ptr->led_out->Port, ptr->led_out->Pin, ~value);
+	else
+		HAL_GPIO_WritePin(ptr->led_out->Port, ptr->led_out->Pin, value);
+
 }
 
 void events_output_debugger(photovoltaic *ptr, uint8_t value)

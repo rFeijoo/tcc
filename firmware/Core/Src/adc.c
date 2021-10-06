@@ -75,7 +75,7 @@ void MX_ADC1_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_1;
+  sConfig.Channel = ADC_CHANNEL_8;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -125,7 +125,7 @@ void MX_ADC2_Init(void)
   }
   /** Configure Regular Channel
   */
-  sConfig.Channel = ADC_CHANNEL_2;
+  sConfig.Channel = ADC_CHANNEL_9;
   sConfig.Rank = ADC_REGULAR_RANK_1;
   sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
   sConfig.SingleDiff = ADC_SINGLE_ENDED;
@@ -210,9 +210,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
       __HAL_RCC_ADC12_CLK_ENABLE();
     }
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
     /**ADC1 GPIO Configuration
-    PA0     ------> ADC1_IN1
+    PC2     ------> ADC1_IN8
     */
     GPIO_InitStruct.Pin = CELL_1_VOLTAGE_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -237,9 +237,9 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
       __HAL_RCC_ADC12_CLK_ENABLE();
     }
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
     /**ADC2 GPIO Configuration
-    PA1     ------> ADC2_IN2
+    PC3     ------> ADC2_IN9
     */
     GPIO_InitStruct.Pin = CELL_1_CURRENT_Pin;
     GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
@@ -285,7 +285,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     }
 
     /**ADC1 GPIO Configuration
-    PA0     ------> ADC1_IN1
+    PC2     ------> ADC1_IN8
     */
     HAL_GPIO_DeInit(CELL_1_VOLTAGE_GPIO_Port, CELL_1_VOLTAGE_Pin);
 
@@ -314,7 +314,7 @@ void HAL_ADC_MspDeInit(ADC_HandleTypeDef* adcHandle)
     }
 
     /**ADC2 GPIO Configuration
-    PA1     ------> ADC2_IN2
+    PC3     ------> ADC2_IN9
     */
     HAL_GPIO_DeInit(CELL_1_CURRENT_GPIO_Port, CELL_1_CURRENT_Pin);
 
