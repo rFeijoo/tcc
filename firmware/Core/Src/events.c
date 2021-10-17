@@ -20,6 +20,8 @@ debug_mod *events_initialize_debug_mod(char *tag, GPIO_TypeDef *Port, uint16_t P
 	printf("\t- ");
 	dbg_struct->probe_3 = events_initialize_digital_ios("probe 3", Port, Probe_3, 0);
 
+	events_blink_debug_module(dbg_struct);
+
 	printf("\n");
 
 	return(dbg_struct);
@@ -43,6 +45,19 @@ digital_IOs *events_initialize_digital_ios(char *tag, GPIO_TypeDef *Port, uint16
 	printf("Initializing %s\n", dig_ios_struct->tag);
 
 	return (dig_ios_struct);
+}
+
+void events_blink_debug_module(debug_mod *dbg)
+{
+	HAL_GPIO_TogglePin(dbg->probe_1->Port, dbg->probe_1->Pin);
+	HAL_GPIO_TogglePin(dbg->probe_2->Port, dbg->probe_2->Pin);
+	HAL_GPIO_TogglePin(dbg->probe_3->Port, dbg->probe_3->Pin);
+
+	HAL_Delay(2500);
+
+	HAL_GPIO_TogglePin(dbg->probe_1->Port, dbg->probe_1->Pin);
+	HAL_GPIO_TogglePin(dbg->probe_2->Port, dbg->probe_2->Pin);
+	HAL_GPIO_TogglePin(dbg->probe_3->Port, dbg->probe_3->Pin);
 }
 
 void events_handler(photovoltaic *ptr)

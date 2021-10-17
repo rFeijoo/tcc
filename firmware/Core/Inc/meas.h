@@ -58,7 +58,7 @@
 #define TEMP_SENSOR_VREF	0.7600
 #define TEMP_SENSOR_SLOPE	0.0025
 
-photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *pos_out, digital_IOs *neg_out, digital_IOs *led_out, debug_mod *debug_mod);
+photovoltaic *meas_initialize_cell(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *pos_out, digital_IOs *neg_out, digital_IOs *led_out, debug_mod *debug_mod);
 
 rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC);
 
@@ -66,7 +66,7 @@ power_and_energy *meas_initialize_power_and_energy_objects(void);
 
 void meas_decouple_system(photovoltaic *ptr);
 
-void meas_sample(photovoltaic *ptr);
+void meas_sample_voltage_and_current(photovoltaic *ptr);
 
 void meas_temperature(photovoltaic *ptr);
 

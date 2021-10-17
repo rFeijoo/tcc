@@ -110,19 +110,6 @@ int main(void)
 
   objects_def_init();
 
-  HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
-
-  if (lcd16x2_i2c_init(&hi2c1))
-  {
-	  printf("Display LCD 16x2 initialized\n");
-
-	  lcd16x2_i2c_setCursor(0, 6);
-	  lcd16x2_i2c_printf("TCC2");
-	  HAL_Delay(2000);
-  	 }
-  else
-	  Error_Handler();
-
   HAL_TIM_Base_Start_IT(&htim1);
   HAL_TIM_Base_Start_IT(&htim2);
 

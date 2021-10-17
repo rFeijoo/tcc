@@ -1,6 +1,6 @@
 #include "meas.h"
 
-photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *pos_out, digital_IOs *neg_out, digital_IOs *led_out, debug_mod *debug_mod)
+photovoltaic *meas_initialize_cell(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *pos_out, digital_IOs *neg_out, digital_IOs *led_out, debug_mod *debug_mod)
 {
 	photovoltaic *ph_struct = (photovoltaic *)malloc(sizeof(photovoltaic));
 
@@ -113,7 +113,7 @@ void meas_temperature(photovoltaic *ptr)
 	}
 }
 
-void meas_sample(photovoltaic *ptr)
+void meas_sample_voltage_and_current(photovoltaic *ptr)
 {
 	// Obtém a leitura simultânea dos módulos ADC
 	uint32_t raw  = HAL_ADCEx_MultiModeGetValue(ptr->voltage->ADC);
@@ -232,18 +232,17 @@ void meas_verify_voltage_triggers(photovoltaic *ptr)
 	{
 		ptr->events_handler &= ~EVENT_OVERVOLTAGE;
 	}
+	// Verifica se o evento de subtensão está iniciado, para resetá-lo
+	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == EVENT_UNDERVOLTAGE &&
+			ptr->voltage->thrd_level_value >= UNDERVOLTAGE_RELEASE_LIMIT)
+	{
+		ptr->events_handler &= ~EVENT_UNDERVOLTAGE;
+	}
 	// Verifica se o evento de sobretensão está resetado, para iniciá-lo
 	else if ((ptr->events_handler & EVENT_OVERVOLTAGE) == 0x00 &&
 				ptr->voltage->thrd_level_value >= OVERVOLTAGE_HOLD_LIMIT)
 	{
 		ptr->events_handler |= EVENT_OVERVOLTAGE;
-	}
-
-	// Verifica se o evento de subtensão está iniciado, para resetá-lo
-	if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == EVENT_UNDERVOLTAGE &&
-			ptr->voltage->thrd_level_value >= UNDERVOLTAGE_RELEASE_LIMIT)
-	{
-		ptr->events_handler &= ~EVENT_UNDERVOLTAGE;
 	}
 	// Verifica se o evento de subtensão está resetado, para iniciá-lo
 	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == 0x00 &&
@@ -283,9 +282,6 @@ void meas_compute_power_and_energy(photovoltaic *ptr)
 
 	// Conversão KW -> (KW / h)
 	ptr->power_energy->energy += (power_3s / 3600.0);
-
-	// Atualiza o Display LCD 16X2
-	lcd16x2_i2c_update(ptr);
 
 	// Protocolo de agregação em multi-camadas da potência produzida
 	ptr->power_energy->frst_level[ptr->power_energy->frst_level_index++] = power_3s;

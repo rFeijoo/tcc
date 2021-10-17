@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
 #include "gpio.h"
 #include "structs.h"
 
@@ -36,6 +37,8 @@
 debug_mod *events_initialize_debug_mod(char *tag, GPIO_TypeDef *Port, uint16_t Probe_1, uint16_t Probe_2, uint16_t Probe_3);
 
 digital_IOs *events_initialize_digital_ios(char *tag, GPIO_TypeDef *Port, uint16_t Pin, uint8_t invert_output);
+
+void events_initialize_display(void);
 
 void events_handler(photovoltaic *ptr);
 
