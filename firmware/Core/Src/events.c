@@ -60,6 +60,14 @@ void events_blink_debug_module(debug_mod *dbg)
 	HAL_GPIO_TogglePin(dbg->probe_3->Port, dbg->probe_3->Pin);
 }
 
+void events_change_state(photovoltaic *ptr, uint8_t event)
+{
+	if ((ptr->events_handler & event) == event)
+		ptr->events_handler &= !event;
+	else
+		ptr->events_handler |= event;
+}
+
 void events_handler(photovoltaic *ptr)
 {
 	// Seccionamento do circuito

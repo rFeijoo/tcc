@@ -80,14 +80,6 @@ power_and_energy *meas_initialize_power_and_energy_objects(void)
 	return (pe_struct);
 }
 
-void meas_decouple_system(photovoltaic *ptr)
-{
-	if ((ptr->events_handler & 0x01) == 1)
-		ptr->events_handler &= ~0x01;
-	else
-		ptr->events_handler |= 0x01;
-}
-
 void meas_temperature(photovoltaic *ptr)
 {
 	// Obtém a leitura do módulo ADC, em bits

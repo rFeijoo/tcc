@@ -40,6 +40,10 @@ digital_IOs *events_initialize_digital_ios(char *tag, GPIO_TypeDef *Port, uint16
 
 void events_initialize_display(void);
 
+void events_blink_debug_module(debug_mod *dbg);
+
+void events_change_state(photovoltaic *ptr, uint8_t event);
+
 void events_handler(photovoltaic *ptr);
 
 void events_output_relays(photovoltaic *ptr, uint8_t value);

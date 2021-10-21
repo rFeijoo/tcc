@@ -69,6 +69,7 @@ void Error_Handler(void);
 #define CELL_1_CURRENT_GPIO_Port GPIOC
 #define CELL_1_DPS_Pin GPIO_PIN_0
 #define CELL_1_DPS_GPIO_Port GPIOA
+#define CELL_1_DPS_EXTI_IRQn EXTI0_IRQn
 #define CELL_1_BUILTIN_LED_Pin GPIO_PIN_5
 #define CELL_1_BUILTIN_LED_GPIO_Port GPIOA
 #define CELL_1_DBG3_Pin GPIO_PIN_10

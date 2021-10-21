@@ -64,8 +64,6 @@ rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC);
 
 power_and_energy *meas_initialize_power_and_energy_objects(void);
 
-void meas_decouple_system(photovoltaic *ptr);
-
 void meas_sample_voltage_and_current(photovoltaic *ptr);
 
 void meas_temperature(photovoltaic *ptr);
