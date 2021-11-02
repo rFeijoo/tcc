@@ -190,8 +190,6 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	{
 		HAL_ADC_Start_IT(&hadc5);
 	}
-
-	UNUSED(&htim);
 }
 /* USER CODE END 1 */
 

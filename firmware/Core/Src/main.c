@@ -103,11 +103,9 @@ int main(void)
   MX_ADC5_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
-  printf("-- Starting System's Configuration\n");
+  printf("-- Starting System's Configuration\n\n");
 
   objects_def_init();
-
-  HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
 
   HAL_TIM_Base_Start_IT(&htim1);
   HAL_TIM_Base_Start_IT(&htim2);

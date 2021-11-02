@@ -1,6 +1,6 @@
 #include "meas.h"
 
-photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave)
+photovoltaic *meas_initialize_cell(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *pos_out, digital_IOs *neg_out, digital_IOs *led_out, debug_mod *debug_mod)
 {
 	photovoltaic *ph_struct = (photovoltaic *)malloc(sizeof(photovoltaic));
 
@@ -15,15 +15,32 @@ photovoltaic *meas_initialize_objects(char *tag, ADC_HandleTypeDef *ADC_master, 
 
 	printf("Initializing %s:\n", ph_struct->tag);
 
-	ph_struct->voltage = meas_initialize_rms_objects("Voltage", ADC_master, VOLTAGE_UPPER_LIMIT, VOLTAGE_LOWER_LIMIT);
-	ph_struct->current = meas_initialize_rms_objects("Current", ADC_slave,  CURRENT_UPPER_LIMIT, CURRENT_LOWER_LIMIT);
+	ph_struct->voltage = meas_initialize_rms_objects("Voltage", ADC_master);
+	ph_struct->current = meas_initialize_rms_objects("Current", ADC_slave);
 
 	ph_struct->power_energy = meas_initialize_power_and_energy_objects();
+
+	ph_struct->pos_out = pos_out;
+	ph_struct->neg_out = neg_out;
+	ph_struct->led_out = led_out;
+
+	if (debug_mod == NULL)
+	{
+		ph_struct->debugger = NULL;
+
+		printf("\t- Debugger not attached\n\n");
+	}
+	else
+	{
+		ph_struct->debugger = debug_mod;
+
+		printf("\t- Debugger attached\n\n");
+	}
 
 	return(ph_struct);
 }
 
-rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC, uint16_t high_trigger, uint16_t low_trigger)
+rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC)
 {
 	rms_measurement *rms_struct = (rms_measurement *)malloc(sizeof(rms_measurement));
 
@@ -37,9 +54,6 @@ rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC, 
 	rms_struct->thrd_level_index = 0;
 	rms_struct->frth_level_index = 0;
 	rms_struct->ffth_level_index = 0;
-
-	rms_struct->high_trigger = high_trigger;
-	rms_struct->low_trigger  = low_trigger;
 
 	HAL_ADCEx_Calibration_Start(rms_struct->ADC, ADC_SINGLE_ENDED);
 
@@ -72,28 +86,24 @@ void meas_temperature(photovoltaic *ptr)
 	uint32_t raw = HAL_ADC_GetValue(&hadc5);
 
 	// Converte a leitura do módulo ADC em tensão
-	float voltage = (float)raw * (SYSTEM_VCC / ADC_RESOLUTION);
+	float voltage = (float)raw * ADC_GAIN;
 
 	// Converte a tensão em temperatura (ºC)
 	ptr->temperature = ((voltage - TEMP_SENSOR_VREF) / TEMP_SENSOR_SLOPE) + TEMP_SENSOR_TREF;
 
-	// Verifica se há superaquecimento
-	if (ptr->temperature >= TEMPERATURE_LIMIT)
-		ptr->events_handler |= 0x10;
-	else
-		ptr->events_handler &= ~0x10;
+	meas_verify_temperature_triggers(ptr);
 }
 
-void meas_sample(photovoltaic *ptr)
+void meas_sample_voltage_and_current(photovoltaic *ptr)
 {
 	// Obtém a leitura simultânea dos módulos ADC
 	uint32_t raw  = HAL_ADCEx_MultiModeGetValue(ptr->voltage->ADC);
 
 	// Extrai a tensão a partir da leitura simultanea dos módulos ADC (16 bits LSB)
-	ptr->voltage->sample = (raw & LSB_WORD_BIT_MASK) * (VCC / ADC_RES_BITS) * VOLTAGE_GAIN;
+	ptr->voltage->sample = (raw & LSB_WORD_BIT_MASK) * ADC_GAIN * VOLTAGE_GAIN_A + VOLTAGE_GAIN_B;
 
 	// Extrai a corrente a partir da leitura simultanea dos módulos ADC (16 bits MSB)
-	ptr->current->sample = (raw >> HALF_WORD_LENGTH) * (VCC / ADC_RES_BITS) * CURRENT_GAIN;
+	ptr->current->sample = (raw >> HALF_WORD_LENGTH) * ADC_GAIN * CURRENT_GAIN_A + CURRENT_GAIN_B;
 
 	// Inicia o processamento das medições de tensão e corrente
 	meas_objects_handler(ptr);
@@ -101,84 +111,157 @@ void meas_sample(photovoltaic *ptr)
 
 void meas_objects_handler(photovoltaic *ptr)
 {
-	// Verifica eventos na medição de tensão (sobretensão, subtensão)
-	meas_verify_voltage_triggers(ptr);
-
 	// Gerencia o protocolo de agregação em multi-camadas para medição de tensão
-	meas_aggregation_handler(ptr->voltage, ptr->voltage->sample);
-
-	// Verifica eventos na medição de corrente (sobrecorrente)
-	meas_verify_current_triggers(ptr);
+	meas_voltage_aggregation_handler(ptr);
 
 	// Gerencia o protocolo de agregação em multi-camadas para medição de corrente
-	meas_aggregation_handler(ptr->current, ptr->current->sample);
+	meas_current_aggregation_handler(ptr);
 
 	// Gerencia o protocolo de medição de potência e energia produzidas
 	meas_compute_power_and_energy(ptr);
 }
 
+void meas_voltage_aggregation_handler(photovoltaic *ptr)
+{
+	ptr->voltage->frst_level[ptr->voltage->frst_level_index++] = ptr->voltage->sample;
+
+	if (ptr->voltage->frst_level_index == RMS_FRST_LEVEL_LENGTH)
+	{
+		ptr->voltage->scnd_level_value = meas_quadratic_average(ptr->voltage->frst_level, RMS_FRST_LEVEL_LENGTH);
+
+		ptr->voltage->scnd_level[ptr->voltage->scnd_level_index++] = ptr->voltage->scnd_level_value;
+
+		if (ptr->voltage->scnd_level_index == RMS_SCND_LEVEL_LENGTH)
+		{
+			ptr->voltage->thrd_level_value = meas_quadratic_average(ptr->voltage->scnd_level, RMS_SCND_LEVEL_LENGTH);
+
+			meas_verify_voltage_triggers(ptr);
+
+			ptr->voltage->thrd_level[ptr->voltage->thrd_level_index++] = ptr->voltage->thrd_level_value;
+
+			if (ptr->voltage->thrd_level_index == RMS_THRD_LEVEL_LENGTH)
+			{
+				ptr->voltage->frth_level[ptr->voltage->frth_level_index++] = meas_quadratic_average(ptr->voltage->thrd_level, RMS_THRD_LEVEL_LENGTH);
+
+				if (ptr->voltage->frth_level_index == RMS_FRTH_LEVEL_LENGTH)
+				{
+					ptr->voltage->ffth_level[ptr->voltage->ffth_level_index++] = meas_quadratic_average(ptr->voltage->frth_level, RMS_FRTH_LEVEL_LENGTH);
+
+					if (ptr->voltage->ffth_level_index == RMS_FFTH_LEVEL_LENGTH)
+						ptr->voltage->ffth_level_index = 0;
+
+					ptr->voltage->frth_level_index = 0;
+				}
+
+				ptr->voltage->thrd_level_index = 0;
+			}
+
+			ptr->voltage->scnd_level_index = 0;
+		}
+
+		ptr->voltage->frst_level_index = 0;
+	}
+}
+
+void meas_current_aggregation_handler(photovoltaic *ptr)
+{
+	ptr->current->frst_level[ptr->current->frst_level_index++] = ptr->current->sample;
+
+	if (ptr->current->frst_level_index == RMS_FRST_LEVEL_LENGTH)
+	{
+		ptr->current->scnd_level_value = meas_quadratic_average(ptr->current->frst_level, RMS_FRST_LEVEL_LENGTH);
+
+		ptr->current->scnd_level[ptr->current->scnd_level_index++] = ptr->current->scnd_level_value;
+
+		if (ptr->current->scnd_level_index == RMS_SCND_LEVEL_LENGTH)
+		{
+			ptr->current->thrd_level_value = meas_quadratic_average(ptr->current->scnd_level, RMS_SCND_LEVEL_LENGTH);
+
+			meas_verify_current_triggers(ptr);
+
+			ptr->current->thrd_level[ptr->current->thrd_level_index++] = ptr->current->thrd_level_value;
+
+			if (ptr->current->thrd_level_index == RMS_THRD_LEVEL_LENGTH)
+			{
+				ptr->current->frth_level[ptr->current->frth_level_index++] = meas_quadratic_average(ptr->current->thrd_level, RMS_THRD_LEVEL_LENGTH);
+
+				if (ptr->current->frth_level_index == RMS_FRTH_LEVEL_LENGTH)
+				{
+					ptr->current->ffth_level[ptr->current->ffth_level_index++] = meas_quadratic_average(ptr->current->frth_level, RMS_FRTH_LEVEL_LENGTH);
+
+					if (ptr->current->ffth_level_index == RMS_FFTH_LEVEL_LENGTH)
+						ptr->current->ffth_level_index = 0;
+
+					ptr->current->frth_level_index = 0;
+				}
+
+				ptr->current->thrd_level_index = 0;
+			}
+
+			ptr->current->scnd_level_index = 0;
+		}
+
+		ptr->current->frst_level_index = 0;
+	}
+}
+
 void meas_verify_voltage_triggers(photovoltaic *ptr)
 {
-	// Reseta o(s) bit(s) referente(s) a medição de tensão
-	ptr->events_handler &= 0xF5;
-
-	// Identifica eventos de sobretensão
-	if (ptr->voltage->sample >= VOLTAGE_UPPER_LIMIT)
+	// Verifica se o evento de sobretensão está iniciado, para resetá-lo
+	if ((ptr->events_handler & EVENT_OVERVOLTAGE) == EVENT_OVERVOLTAGE &&
+			ptr->voltage->thrd_level_value <= OVERVOLTAGE_RELEASE_LIMIT)
 	{
-		ptr->events_handler |= 0x02;
+		ptr->events_handler &= ~EVENT_OVERVOLTAGE;
 	}
-	// Identifica eventos de subtensão
-	else if (ptr->voltage->sample <= VOLTAGE_LOWER_LIMIT)
+	// Verifica se o evento de subtensão está iniciado, para resetá-lo
+	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == EVENT_UNDERVOLTAGE &&
+			ptr->voltage->thrd_level_value >= UNDERVOLTAGE_RELEASE_LIMIT)
 	{
-		ptr->events_handler |= 0x08;
+		ptr->events_handler &= ~EVENT_UNDERVOLTAGE;
+	}
+	// Verifica se o evento de sobretensão está resetado, para iniciá-lo
+	else if ((ptr->events_handler & EVENT_OVERVOLTAGE) != EVENT_OVERVOLTAGE &&
+				ptr->voltage->thrd_level_value >= OVERVOLTAGE_HOLD_LIMIT)
+	{
+		ptr->events_handler |= EVENT_OVERVOLTAGE;
+	}
+	// Verifica se o evento de subtensão está resetado, para iniciá-lo
+	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) != EVENT_UNDERVOLTAGE &&
+				ptr->voltage->thrd_level_value <= UNDERVOLTAGE_HOLD_LIMIT)
+	{
+		ptr->events_handler |= EVENT_UNDERVOLTAGE;
 	}
 }
 
 void meas_verify_current_triggers(photovoltaic *ptr)
 {
-	// Reseta o(s) bit(s) referente(s) a medição de corrente
-	ptr->events_handler &= 0xFB;
-
-	// Identifica eventos de sobrecorrente
-	if (ptr->current->sample >= CURRENT_UPPER_LIMIT)
+	// Verifica se o evento de sobrecorrente está iniciado, para resetá-lo
+	if ((ptr->events_handler & EVENT_OVERCURRENT) == EVENT_OVERCURRENT &&
+			ptr->current->thrd_level_value <= OVERCURRENT_RELEASE_LIMIT)
 	{
-		ptr->events_handler |= 0x04;
+		ptr->events_handler &= ~EVENT_OVERCURRENT;
+	}
+	// Verifica se o evento de sobrecorrente está resetado, para iniciá-lo
+	else if ((ptr->events_handler & EVENT_OVERCURRENT) != EVENT_OVERCURRENT &&
+			ptr->current->thrd_level_value >= OVERCURRENT_HOLD_LIMIT)
+	{
+		ptr->events_handler |= EVENT_OVERCURRENT;
 	}
 }
 
-void meas_aggregation_handler(rms_measurement *ptr, float value)
+void meas_verify_temperature_triggers(photovoltaic *ptr)
 {
-	ptr->frst_level[ptr->frst_level_index++] = value;
-
-	if (ptr->frst_level_index == RMS_FRST_LEVEL_LENGTH)
+	// Verifica se o evento de superaquecimento está iniciado, para resetá-lo
+	if ((ptr->events_handler & EVENT_OVERHEAT) == EVENT_OVERHEAT &&
+			ptr->temperature <= OVERHEAT_RELEASE_LIMIT)
 	{
-		ptr->scnd_level[ptr->scnd_level_index++] = meas_quadratic_average(ptr->frst_level, RMS_FRST_LEVEL_LENGTH);
-
-		if (ptr->scnd_level_index == RMS_SCND_LEVEL_LENGTH)
-		{
-			ptr->thrd_level[ptr->thrd_level_index++] = meas_quadratic_average(ptr->scnd_level, RMS_SCND_LEVEL_LENGTH);
-
-			if (ptr->thrd_level_index == RMS_THRD_LEVEL_LENGTH)
-			{
-				ptr->frth_level[ptr->frth_level_index++] = meas_quadratic_average(ptr->thrd_level, RMS_THRD_LEVEL_LENGTH);
-
-				if (ptr->frth_level_index == RMS_FRTH_LEVEL_LENGTH)
-				{
-					ptr->ffth_level[ptr->ffth_level_index++] = meas_quadratic_average(ptr->frth_level, RMS_FRTH_LEVEL_LENGTH);
-
-					if (ptr->ffth_level_index == RMS_FFTH_LEVEL_LENGTH)
-						ptr->ffth_level_index = 0;
-
-					ptr->frth_level_index = 0;
-				}
-
-				ptr->thrd_level_index = 0;
-			}
-
-			ptr->scnd_level_index = 0;
-		}
-
-		ptr->frst_level_index = 0;
+		ptr->events_handler &= ~EVENT_OVERHEAT;
+	}
+	// Verifica se o evento de superaquecimento está resetado, para iniciá-lo
+	if ((ptr->events_handler & EVENT_OVERHEAT) != EVENT_OVERHEAT &&
+			ptr->temperature >= OVERHEAT_HOLD_LIMIT)
+	{
+		ptr->events_handler |= EVENT_OVERHEAT;
 	}
 }
 

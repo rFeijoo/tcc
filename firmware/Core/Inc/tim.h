@@ -29,6 +29,7 @@ extern "C" {
 
 /* USER CODE BEGIN Includes */
 #include "adc.h"
+#include "objects_def.h"
 /* USER CODE END Includes */
 
 extern TIM_HandleTypeDef htim1;
