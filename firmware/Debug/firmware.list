@@ -39,9 +39,9 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   000160ca  00000000  00000000  0006d01a  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    0010bed4  00000000  00000000  000830e4  2**0
+ 18 .debug_str    0010bed2  00000000  00000000  000830e4  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000053  00000000  00000000  0018efb8  2**0
+ 19 .comment      00000053  00000000  00000000  0018efb6  2**0
                   CONTENTS, READONLY
  20 .debug_frame  0000619c  00000000  00000000  0018f00c  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
@@ -3801,9 +3801,9 @@ void meas_verify_voltage_triggers(photovoltaic *ptr)
  8001f50:	f85d 7b04 	ldr.w	r7, [sp], #4
  8001f54:	4770      	bx	lr
  8001f56:	bf00      	nop
- 8001f58:	43e10000 	.word	0x43e10000
+ 8001f58:	432f0000 	.word	0x432f0000
  8001f5c:	42480000 	.word	0x42480000
- 8001f60:	43ed8000 	.word	0x43ed8000
+ 8001f60:	43480000 	.word	0x43480000
 
 08001f64 <meas_verify_current_triggers>:
 
@@ -3826,7 +3826,7 @@ void meas_verify_current_triggers(photovoltaic *ptr)
  8001f7e:	f503 63dd 	add.w	r3, r3, #1768	; 0x6e8
  8001f82:	edd3 7a00 	vldr	s15, [r3]
 	if ((ptr->events_handler & EVENT_OVERCURRENT) == EVENT_OVERCURRENT &&
- 8001f86:	eeb3 7a02 	vmov.f32	s14, #50	; 0x41900000  18.0
+ 8001f86:	eeb0 7a00 	vmov.f32	s14, #0	; 0x40000000  2.0
  8001f8a:	eef4 7ac7 	vcmpe.f32	s15, s14
  8001f8e:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
  8001f92:	d809      	bhi.n	8001fa8 <meas_verify_current_triggers+0x44>
@@ -3857,7 +3857,7 @@ void meas_verify_current_triggers(photovoltaic *ptr)
  8001fba:	f503 63dd 	add.w	r3, r3, #1768	; 0x6e8
  8001fbe:	edd3 7a00 	vldr	s15, [r3]
 	else if ((ptr->events_handler & EVENT_OVERCURRENT) != EVENT_OVERCURRENT &&
- 8001fc2:	eeb3 7a03 	vmov.f32	s14, #51	; 0x41980000  19.0
+ 8001fc2:	eeb0 7a08 	vmov.f32	s14, #8	; 0x40400000  3.0
  8001fc6:	eef4 7ac7 	vcmpe.f32	s15, s14
  8001fca:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
  8001fce:	da00      	bge.n	8001fd2 <meas_verify_current_triggers+0x6e>
@@ -3896,7 +3896,7 @@ void meas_verify_temperature_triggers(photovoltaic *ptr)
  8002006:	687b      	ldr	r3, [r7, #4]
  8002008:	edd3 7a03 	vldr	s15, [r3, #12]
 	if ((ptr->events_handler & EVENT_OVERHEAT) == EVENT_OVERHEAT &&
- 800200c:	ed9f 7a18 	vldr	s14, [pc, #96]	; 8002070 <meas_verify_temperature_triggers+0x80>
+ 800200c:	eeb3 7a0e 	vmov.f32	s14, #62	; 0x41f00000  30.0
  8002010:	eef4 7ac7 	vcmpe.f32	s15, s14
  8002014:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
  8002018:	d808      	bhi.n	800202c <meas_verify_temperature_triggers+0x3c>
@@ -3920,7 +3920,7 @@ void meas_verify_temperature_triggers(photovoltaic *ptr)
  800203a:	687b      	ldr	r3, [r7, #4]
  800203c:	edd3 7a03 	vldr	s15, [r3, #12]
 	if ((ptr->events_handler & EVENT_OVERHEAT) != EVENT_OVERHEAT &&
- 8002040:	ed9f 7a0c 	vldr	s14, [pc, #48]	; 8002074 <meas_verify_temperature_triggers+0x84>
+ 8002040:	ed9f 7a0b 	vldr	s14, [pc, #44]	; 8002070 <meas_verify_temperature_triggers+0x80>
  8002044:	eef4 7ac7 	vcmpe.f32	s15, s14
  8002048:	eef1 fa10 	vmrs	APSR_nzcv, fpscr
  800204c:	da00      	bge.n	8002050 <meas_verify_temperature_triggers+0x60>
@@ -3944,7 +3944,7 @@ void meas_verify_temperature_triggers(photovoltaic *ptr)
  800206c:	4770      	bx	lr
  800206e:	bf00      	nop
  8002070:	42480000 	.word	0x42480000
- 8002074:	42960000 	.word	0x42960000
+ 8002074:	00000000 	.word	0x00000000
 
 08002078 <meas_compute_power_and_energy>:
 

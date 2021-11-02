@@ -36,17 +36,17 @@
 /**
  *	@brief Definição dos limiares de tensão e corrente.
  */
-#define OVERVOLTAGE_HOLD_LIMIT		475.0
-#define OVERVOLTAGE_RELEASE_LIMIT	450.0
+#define OVERVOLTAGE_HOLD_LIMIT		200.0
+#define OVERVOLTAGE_RELEASE_LIMIT	175.0
 
 #define UNDERVOLTAGE_HOLD_LIMIT		25.00
 #define UNDERVOLTAGE_RELEASE_LIMIT	50.00
 
-#define OVERCURRENT_HOLD_LIMIT		19.00
-#define OVERCURRENT_RELEASE_LIMIT	18.00
+#define OVERCURRENT_HOLD_LIMIT		3.00
+#define OVERCURRENT_RELEASE_LIMIT	2.00
 
-#define OVERHEAT_HOLD_LIMIT			75.00
-#define OVERHEAT_RELEASE_LIMIT		50.00
+#define OVERHEAT_HOLD_LIMIT			50.00
+#define OVERHEAT_RELEASE_LIMIT		30.00
 
 /**
  *	@brief Definição do divisor de clock para computar potência e energia.
