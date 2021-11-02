@@ -116,36 +116,36 @@ void events_handler(photovoltaic *ptr)
 
 void events_output_relays(photovoltaic *ptr, uint8_t value)
 {
-	// Relé (-)
-	if (ptr->neg_out->invert)
-		HAL_GPIO_WritePin(ptr->neg_out->Port, ptr->neg_out->Pin, ~value);
+	// Relé 1
+	if (ptr->relay_1->invert)
+		HAL_GPIO_WritePin(ptr->relay_1->Port, ptr->relay_1->Pin, ~value);
 	else
-		HAL_GPIO_WritePin(ptr->neg_out->Port, ptr->neg_out->Pin, value);
+		HAL_GPIO_WritePin(ptr->relay_1->Port, ptr->relay_1->Pin, value);
 
-	// Relé (+)
-	if (ptr->pos_out->invert)
-		HAL_GPIO_WritePin(ptr->pos_out->Port, ptr->pos_out->Pin, ~value);
+	// Relé 2
+	if (ptr->relay_2->invert)
+		HAL_GPIO_WritePin(ptr->relay_2->Port, ptr->relay_2->Pin, ~value);
 	else
-		HAL_GPIO_WritePin(ptr->pos_out->Port, ptr->pos_out->Pin, value);
+		HAL_GPIO_WritePin(ptr->relay_2->Port, ptr->relay_2->Pin, value);
 
-	// LED integrado
-	if (ptr->led_out->invert)
-		HAL_GPIO_WritePin(ptr->led_out->Port, ptr->led_out->Pin, ~value);
+	// Status da saída
+	if (ptr->status->invert)
+		HAL_GPIO_WritePin(ptr->status->Port, ptr->status->Pin, ~value);
 	else
-		HAL_GPIO_WritePin(ptr->led_out->Port, ptr->led_out->Pin, value);
+		HAL_GPIO_WritePin(ptr->status->Port, ptr->status->Pin, value);
 
 }
 
 void events_output_debugger(photovoltaic *ptr, uint8_t value)
 {
-	if (ptr->debugger == NULL)
+	if (ptr->dbg_mod == NULL)
 		return;
 
 	// LSB
-	HAL_GPIO_WritePin(ptr->debugger->probe_3->Port, ptr->debugger->probe_3->Pin, 0x1 & value);
+	HAL_GPIO_WritePin(ptr->dbg_mod->probe_3->Port, ptr->dbg_mod->probe_3->Pin, 0x1 & value);
 
-	HAL_GPIO_WritePin(ptr->debugger->probe_2->Port, ptr->debugger->probe_2->Pin, 0x2 & value);
+	HAL_GPIO_WritePin(ptr->dbg_mod->probe_2->Port, ptr->dbg_mod->probe_2->Pin, 0x2 & value);
 
 	// MSB
-	HAL_GPIO_WritePin(ptr->debugger->probe_1->Port, ptr->debugger->probe_1->Pin, 0x4 & value);
+	HAL_GPIO_WritePin(ptr->dbg_mod->probe_1->Port, ptr->dbg_mod->probe_1->Pin, 0x4 & value);
 }

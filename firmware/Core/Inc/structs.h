@@ -89,19 +89,17 @@ typedef struct {
 typedef struct {
 	char *tag;
 
-	rms_measurement *voltage;
-	rms_measurement *current;
-
-	float temperature;
-
+	rms_measurement *master, *slave;
 	power_and_energy *power_energy;
 
-	digital_IOs *pos_out, *neg_out, *led_out;
+	digital_IOs *relay_1, *relay_2, *status;
 
-	debug_mod *debugger;
+	debug_mod *dbg_mod;
 
-	uint16_t pe_interval_cnt;
+	uint16_t pe_clk_div_counter;
 	uint8_t events_handler;
+
+	float temperature;
 } photovoltaic;
 
 #endif /*_STRUCTS_H_*/
