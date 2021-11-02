@@ -18,24 +18,18 @@ void objects_def_init(void)
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
-//	if (hadc->Instance == ADC1)
-//		meas_sample_voltage_and_current(cell);
-//	else if (hadc->Instance == ADC5)
-//		meas_temperature(cell);
+	if (hadc->Instance == ADC1)
+		meas_sample_voltage_and_current(cell);
+	else if (hadc->Instance == ADC5)
+		meas_temperature(cell);
 }
 
 void objects_def_exti_gpio(uint16_t GPIO_Pin)
 {
-	if (GPIO_Pin == CELL_1_BTN_Pin) {
+	if (GPIO_Pin == CELL_1_BTN_Pin)
 		events_change_state(cell, EVENT_USER_BREAK);
-
-		printf("user btn\n");
-	}
-	else if (GPIO_Pin == CELL_1_DPS_Pin) {
+	else if (GPIO_Pin == CELL_1_DPS_Pin)
 		events_change_state(cell, EVENT_DPS_LIFESPAN);
-
-		printf("DPS lifespan\n");
-	}
 }
 
 void objects_def_loop(void)

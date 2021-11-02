@@ -8,8 +8,6 @@ C_SRCS += \
 ../Core/Src/adc.c \
 ../Core/Src/events.c \
 ../Core/Src/gpio.c \
-../Core/Src/i2c.c \
-../Core/Src/lcd_16x2.c \
 ../Core/Src/main.c \
 ../Core/Src/meas.c \
 ../Core/Src/objects_def.c \
@@ -24,8 +22,6 @@ OBJS += \
 ./Core/Src/adc.o \
 ./Core/Src/events.o \
 ./Core/Src/gpio.o \
-./Core/Src/i2c.o \
-./Core/Src/lcd_16x2.o \
 ./Core/Src/main.o \
 ./Core/Src/meas.o \
 ./Core/Src/objects_def.o \
@@ -40,8 +36,6 @@ C_DEPS += \
 ./Core/Src/adc.d \
 ./Core/Src/events.d \
 ./Core/Src/gpio.d \
-./Core/Src/i2c.d \
-./Core/Src/lcd_16x2.d \
 ./Core/Src/main.d \
 ./Core/Src/meas.d \
 ./Core/Src/objects_def.d \

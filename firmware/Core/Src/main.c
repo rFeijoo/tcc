@@ -20,7 +20,6 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
-#include "i2c.h"
 #include "tim.h"
 #include "gpio.h"
 
@@ -30,7 +29,6 @@
 #include "meas.h"
 #include "objects_def.h"
 #include "events.h"
-#include "lcd_16x2.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -104,7 +102,6 @@ int main(void)
   MX_ADC2_Init();
   MX_ADC5_Init();
   MX_TIM2_Init();
-  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   printf("-- Starting System's Configuration\n\n");
 
@@ -173,9 +170,7 @@ void SystemClock_Config(void)
   }
   /** Initializes the peripherals clocks
   */
-  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_I2C1|RCC_PERIPHCLK_ADC12
-                              |RCC_PERIPHCLK_ADC345;
-  PeriphClkInit.I2c1ClockSelection = RCC_I2C1CLKSOURCE_PCLK1;
+  PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_ADC12|RCC_PERIPHCLK_ADC345;
   PeriphClkInit.Adc12ClockSelection = RCC_ADC12CLKSOURCE_SYSCLK;
   PeriphClkInit.Adc345ClockSelection = RCC_ADC345CLKSOURCE_SYSCLK;
   if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK)

@@ -86,23 +86,12 @@ void meas_temperature(photovoltaic *ptr)
 	uint32_t raw = HAL_ADC_GetValue(&hadc5);
 
 	// Converte a leitura do módulo ADC em tensão
-	float voltage = (float)raw * (SYSTEM_VCC / ADC_RESOLUTION);
+	float voltage = (float)raw * ADC_GAIN;
 
 	// Converte a tensão em temperatura (ºC)
 	ptr->temperature = ((voltage - TEMP_SENSOR_VREF) / TEMP_SENSOR_SLOPE) + TEMP_SENSOR_TREF;
 
-	// Verifica se o evento de superaquecimento está iniciado, para resetá-lo
-	if ((ptr->events_handler & EVENT_OVERHEAT) == EVENT_OVERHEAT &&
-			ptr->temperature <= OVERHEAT_RELEASE_LIMIT)
-	{
-		ptr->events_handler &= ~EVENT_OVERHEAT;
-	}
-	// Verifica se o evento de superaquecimento está resetado, para iniciá-lo
-	if ((ptr->events_handler & EVENT_OVERHEAT) == 0x00 &&
-			ptr->temperature >= OVERHEAT_HOLD_LIMIT)
-	{
-		ptr->events_handler |= EVENT_OVERHEAT;
-	}
+	meas_verify_temperature_triggers(ptr);
 }
 
 void meas_sample_voltage_and_current(photovoltaic *ptr)
@@ -111,10 +100,10 @@ void meas_sample_voltage_and_current(photovoltaic *ptr)
 	uint32_t raw  = HAL_ADCEx_MultiModeGetValue(ptr->voltage->ADC);
 
 	// Extrai a tensão a partir da leitura simultanea dos módulos ADC (16 bits LSB)
-	ptr->voltage->sample = (raw & LSB_WORD_BIT_MASK) * (VCC / ADC_RES_BITS) * VOLTAGE_GAIN;
+	ptr->voltage->sample = (raw & LSB_WORD_BIT_MASK) * ADC_GAIN * VOLTAGE_GAIN_A + VOLTAGE_GAIN_B;
 
 	// Extrai a corrente a partir da leitura simultanea dos módulos ADC (16 bits MSB)
-	ptr->current->sample = (raw >> HALF_WORD_LENGTH) * (VCC / ADC_RES_BITS) * CURRENT_GAIN;
+	ptr->current->sample = (raw >> HALF_WORD_LENGTH) * ADC_GAIN * CURRENT_GAIN_A + CURRENT_GAIN_B;
 
 	// Inicia o processamento das medições de tensão e corrente
 	meas_objects_handler(ptr);
@@ -231,13 +220,13 @@ void meas_verify_voltage_triggers(photovoltaic *ptr)
 		ptr->events_handler &= ~EVENT_UNDERVOLTAGE;
 	}
 	// Verifica se o evento de sobretensão está resetado, para iniciá-lo
-	else if ((ptr->events_handler & EVENT_OVERVOLTAGE) == 0x00 &&
+	else if ((ptr->events_handler & EVENT_OVERVOLTAGE) != EVENT_OVERVOLTAGE &&
 				ptr->voltage->thrd_level_value >= OVERVOLTAGE_HOLD_LIMIT)
 	{
 		ptr->events_handler |= EVENT_OVERVOLTAGE;
 	}
 	// Verifica se o evento de subtensão está resetado, para iniciá-lo
-	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == 0x00 &&
+	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) != EVENT_UNDERVOLTAGE &&
 				ptr->voltage->thrd_level_value <= UNDERVOLTAGE_HOLD_LIMIT)
 	{
 		ptr->events_handler |= EVENT_UNDERVOLTAGE;
@@ -250,13 +239,29 @@ void meas_verify_current_triggers(photovoltaic *ptr)
 	if ((ptr->events_handler & EVENT_OVERCURRENT) == EVENT_OVERCURRENT &&
 			ptr->current->thrd_level_value <= OVERCURRENT_RELEASE_LIMIT)
 	{
-		ptr->events_handler &= 0xFB;
+		ptr->events_handler &= ~EVENT_OVERCURRENT;
 	}
 	// Verifica se o evento de sobrecorrente está resetado, para iniciá-lo
-	else if ((ptr->events_handler & EVENT_OVERCURRENT) == 0x00 &&
+	else if ((ptr->events_handler & EVENT_OVERCURRENT) != EVENT_OVERCURRENT &&
 			ptr->current->thrd_level_value >= OVERCURRENT_HOLD_LIMIT)
 	{
-		ptr->events_handler |= 0x04;
+		ptr->events_handler |= EVENT_OVERCURRENT;
+	}
+}
+
+void meas_verify_temperature_triggers(photovoltaic *ptr)
+{
+	// Verifica se o evento de superaquecimento está iniciado, para resetá-lo
+	if ((ptr->events_handler & EVENT_OVERHEAT) == EVENT_OVERHEAT &&
+			ptr->temperature <= OVERHEAT_RELEASE_LIMIT)
+	{
+		ptr->events_handler &= ~EVENT_OVERHEAT;
+	}
+	// Verifica se o evento de superaquecimento está resetado, para iniciá-lo
+	if ((ptr->events_handler & EVENT_OVERHEAT) != EVENT_OVERHEAT &&
+			ptr->temperature >= OVERHEAT_HOLD_LIMIT)
+	{
+		ptr->events_handler |= EVENT_OVERHEAT;
 	}
 }
 

@@ -16,20 +16,22 @@
 #include "tim.h"
 #include "structs.h"
 #include "events.h"
-#include "lcd_16x2.h"
 
 /**
  *	@brief Definições gerais do sistema.
  */
 #define SYSTEM_VCC			3.3
 #define ADC_RESOLUTION		4095.0
+#define ADC_GAIN			(SYSTEM_VCC / ADC_RESOLUTION)
 #define BTN_DEBOUNCE_DELAY 	50
 
 /**
  *	@brief Definição dos ganhos dos circuitos de medição em regime permanente.
  */
-#define VOLTAGE_GAIN 151.52
-#define CURRENT_GAIN 17.857
+#define VOLTAGE_GAIN_A 164.10
+#define VOLTAGE_GAIN_B 2.0356
+#define CURRENT_GAIN_A 6.9016
+#define CURRENT_GAIN_B 0.0174
 
 /**
  *	@brief Definição dos limiares de tensão e corrente.
@@ -73,6 +75,8 @@ void meas_objects_handler(photovoltaic *ptr);
 void meas_verify_voltage_triggers(photovoltaic *ptr);
 
 void meas_verify_current_triggers(photovoltaic *ptr);
+
+void meas_verify_temperature_triggers(photovoltaic *ptr);
 
 void meas_voltage_aggregation_handler(photovoltaic *ptr);
 
