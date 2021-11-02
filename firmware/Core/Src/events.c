@@ -134,7 +134,6 @@ void events_output_relays(photovoltaic *ptr, int state)
 		HAL_GPIO_WritePin(ptr->status->Port, ptr->status->Pin, ~state);
 	else
 		HAL_GPIO_WritePin(ptr->status->Port, ptr->status->Pin, state);
-
 }
 
 void events_output_debugger(photovoltaic *ptr, int state)
