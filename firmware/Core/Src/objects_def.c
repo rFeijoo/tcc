@@ -4,6 +4,8 @@ debug_mod	 *dbg;
 digital_IOs  *relay_pos, *relay_neg, *builtin_led;
 photovoltaic *cell;
 
+float temperature;
+
 void objects_def_init(void)
 {
 	relay_pos = events_initialize_digital_ios("Relay (+)", GPIOA, CELL_1_OUT_POS_Pin, 0);
@@ -20,8 +22,8 @@ void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef *hadc)
 {
 	if (hadc->Instance == ADC1)
 		meas_sample_voltage_and_current(cell);
-	else if (hadc->Instance == ADC5)
-		meas_temperature(cell);
+	if (hadc->Instance == ADC5)
+		temperature = meas_get_temperature();
 }
 
 void objects_def_exti_gpio(uint16_t GPIO_Pin)
@@ -34,5 +36,5 @@ void objects_def_exti_gpio(uint16_t GPIO_Pin)
 
 void objects_def_loop(void)
 {
-	events_handler(cell);
+	meas_objects_handler(cell, temperature);
 }

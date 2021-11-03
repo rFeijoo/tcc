@@ -62,90 +62,86 @@ void events_blink_debug_module(debug_mod *dbg)
 
 void events_change_state(photovoltaic *ptr, uint8_t event)
 {
-	if ((ptr->events_handler & event) == event)
-		ptr->events_handler &= !event;
+	if (is_event_active(ptr->events_handler, event))
+		ptr->events_handler &= ~event;
 	else
 		ptr->events_handler |= event;
+}
+
+bool is_event_active(uint8_t handler, uint8_t event_flag)
+{
+	if ((handler & event_flag) == event_flag)
+		return (true);
+
+	return (false);
 }
 
 void events_handler(photovoltaic *ptr)
 {
 	// Seccionamento do circuito
-	if ((ptr->events_handler & EVENT_USER_BREAK) == EVENT_USER_BREAK)
-	{
-		events_output_relays(ptr, 0);
+	if (is_event_active(ptr->events_handler, EVENT_USER_BREAK)) {
+		events_output_relays(ptr, OUTPUT_LOW);
 		events_output_debugger(ptr, 0x1);
 	}
 	// Sobretensão
-	else if ((ptr->events_handler & EVENT_OVERVOLTAGE) == EVENT_OVERVOLTAGE)
-	{
-		events_output_relays(ptr, 0);
+	else if (is_event_active(ptr->events_handler, EVENT_OVERVOLTAGE)) {
+		events_output_relays(ptr, OUTPUT_LOW);
 		events_output_debugger(ptr, 0x2);
 	}
 	// Sobrecorrente
-	else if ((ptr->events_handler & EVENT_OVERCURRENT) == EVENT_OVERCURRENT)
-	{
-		events_output_relays(ptr, 0);
+	else if (is_event_active(ptr->events_handler, EVENT_OVERCURRENT)) {
+		events_output_relays(ptr, OUTPUT_LOW);
 		events_output_debugger(ptr, 0x3);
 	}
 	// Subtensão
-	else if ((ptr->events_handler & EVENT_UNDERVOLTAGE) == EVENT_UNDERVOLTAGE)
-	{
-		events_output_relays(ptr, 0);
+	else if (is_event_active(ptr->events_handler, EVENT_UNDERVOLTAGE)) {
+		events_output_relays(ptr, OUTPUT_LOW);
 		events_output_debugger(ptr, 0x4);
 	}
 	// Superaquecimento
-	else if ((ptr->events_handler & EVENT_OVERHEAT) == EVENT_OVERHEAT)
-	{
-		events_output_relays(ptr, 1);
+	else if (is_event_active(ptr->events_handler, EVENT_OVERHEAT)) {
+		events_output_relays(ptr, OUTPUT_HIGH);
 		events_output_debugger(ptr, 0x5);
 	}
 	// Fim de vida util do DPS
-	else if ((ptr->events_handler & EVENT_DPS_LIFESPAN) == EVENT_DPS_LIFESPAN)
-	{
-		events_output_relays(ptr, 0);
+	else if (is_event_active(ptr->events_handler, EVENT_DPS_LIFESPAN)) {
+		events_output_relays(ptr, OUTPUT_LOW);
 		events_output_debugger(ptr, 0x6);
 	}
 	// Nenhum evento identificado
-	else
-	{
-		events_output_relays(ptr, 1);
-		events_output_debugger(ptr, 0x0);
+	else {
+		events_output_relays(ptr, OUTPUT_HIGH);
+		events_output_debugger(ptr, NO_EVENT);
 	}
 }
 
-void events_output_relays(photovoltaic *ptr, uint8_t value)
+void events_output_relays(photovoltaic *ptr, int state)
 {
-	// Relé (-)
-	if (ptr->neg_out->invert)
-		HAL_GPIO_WritePin(ptr->neg_out->Port, ptr->neg_out->Pin, ~value);
+	// Relé 1
+	if (ptr->relay_1->invert)
+		HAL_GPIO_WritePin(ptr->relay_1->Port, ptr->relay_1->Pin, ~state);
 	else
-		HAL_GPIO_WritePin(ptr->neg_out->Port, ptr->neg_out->Pin, value);
+		HAL_GPIO_WritePin(ptr->relay_1->Port, ptr->relay_1->Pin, state);
 
-	// Relé (+)
-	if (ptr->pos_out->invert)
-		HAL_GPIO_WritePin(ptr->pos_out->Port, ptr->pos_out->Pin, ~value);
+	// Relé 2
+	if (ptr->relay_2->invert)
+		HAL_GPIO_WritePin(ptr->relay_2->Port, ptr->relay_2->Pin, ~state);
 	else
-		HAL_GPIO_WritePin(ptr->pos_out->Port, ptr->pos_out->Pin, value);
+		HAL_GPIO_WritePin(ptr->relay_2->Port, ptr->relay_2->Pin, state);
 
-	// LED integrado
-	if (ptr->led_out->invert)
-		HAL_GPIO_WritePin(ptr->led_out->Port, ptr->led_out->Pin, ~value);
+	// Status da saída
+	if (ptr->status->invert)
+		HAL_GPIO_WritePin(ptr->status->Port, ptr->status->Pin, ~state);
 	else
-		HAL_GPIO_WritePin(ptr->led_out->Port, ptr->led_out->Pin, value);
+		HAL_GPIO_WritePin(ptr->status->Port, ptr->status->Pin, state);
 
 }
 
-void events_output_debugger(photovoltaic *ptr, uint8_t value)
+void events_output_debugger(photovoltaic *ptr, int state)
 {
-	if (ptr->debugger == NULL)
-		return;
+	HAL_GPIO_WritePin(ptr->dbg_mod->probe_3->Port, ptr->dbg_mod->probe_3->Pin, 0x1 & state);
 
-	// LSB
-	HAL_GPIO_WritePin(ptr->debugger->probe_3->Port, ptr->debugger->probe_3->Pin, 0x1 & value);
+	HAL_GPIO_WritePin(ptr->dbg_mod->probe_2->Port, ptr->dbg_mod->probe_2->Pin, 0x2 & state);
 
-	HAL_GPIO_WritePin(ptr->debugger->probe_2->Port, ptr->debugger->probe_2->Pin, 0x2 & value);
-
-	// MSB
-	HAL_GPIO_WritePin(ptr->debugger->probe_1->Port, ptr->debugger->probe_1->Pin, 0x4 & value);
+	HAL_GPIO_WritePin(ptr->dbg_mod->probe_1->Port, ptr->dbg_mod->probe_1->Pin, 0x4 & state);
 }

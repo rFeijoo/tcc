@@ -49,9 +49,11 @@
 #define OVERHEAT_RELEASE_LIMIT		50.00
 
 /**
- *	@brief Definição do divisor de clock para computar potência e energia.
+ *	@brief Definição do diferencial de tempo para cálculo da energia.
  */
-#define POWER_ENERGY_INTERVAL	(RMS_FRST_LEVEL_LENGTH * RMS_SCND_LEVEL_LENGTH)
+#define POWER_ENERGY_INTERVAL_S	3.0
+#define SECONDS_IN_ONE_HOUR		3600.0
+#define POWER_ENERGY_DT			(POWER_ENERGY_INTERVAL_S / SECONDS_IN_ONE_HOUR)
 
 /**
  *	@brief Definições do sensor de temperatura integrado.
@@ -60,32 +62,30 @@
 #define TEMP_SENSOR_VREF	0.7600
 #define TEMP_SENSOR_SLOPE	0.0025
 
-photovoltaic *meas_initialize_cell(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *pos_out, digital_IOs *neg_out, digital_IOs *led_out, debug_mod *debug_mod);
+photovoltaic *meas_initialize_cell(char *tag, ADC_HandleTypeDef *ADC_master, ADC_HandleTypeDef *ADC_slave, digital_IOs *relay_1, digital_IOs *relay_2, digital_IOs *LED, debug_mod *dbg_mod);
 
 rms_measurement *meas_initialize_rms_objects(char *tag, ADC_HandleTypeDef *ADC);
 
-power_and_energy *meas_initialize_power_and_energy_objects(void);
+power_measurement *meas_initialize_power_and_energy_objects(void);
 
 void meas_sample_voltage_and_current(photovoltaic *ptr);
 
-void meas_temperature(photovoltaic *ptr);
+void meas_objects_handler(photovoltaic *ptr, float temperature);
 
-void meas_objects_handler(photovoltaic *ptr);
-
-void meas_verify_voltage_triggers(photovoltaic *ptr);
-
-void meas_verify_current_triggers(photovoltaic *ptr);
-
-void meas_verify_temperature_triggers(photovoltaic *ptr);
-
-void meas_voltage_aggregation_handler(photovoltaic *ptr);
-
-void meas_current_aggregation_handler(photovoltaic *ptr);
-
-void meas_compute_power_and_energy(photovoltaic *ptr);
-
-int meas_power_energy_interval(photovoltaic *ptr);
+void meas_aggregation_handler(rms_measurement *ptr, float gain_a, float gain_b);
 
 float meas_quadratic_average(float *ptr, int length);
+
+void meas_verify_voltage_events(uint8_t *handler, float voltage);
+
+void meas_verify_current_events(uint8_t *handler, float current);
+
+void meas_compute_power_and_energy(photovoltaic *ptr, int index);
+
+void meas_update_cell_values(photovoltaic *ptr, int index, float temperature);
+
+float meas_get_temperature(void);
+
+void meas_verify_temperature_events(uint8_t *handler, float temperature);
 
 #endif /*_MEAS_H_*/

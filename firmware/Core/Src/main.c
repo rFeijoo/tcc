@@ -107,6 +107,8 @@ int main(void)
 
   objects_def_init();
 
+  HAL_ADCEx_Calibration_Start(&hadc5, ADC_SINGLE_ENDED);
+
   HAL_TIM_Base_Start_IT(&htim1);
   HAL_TIM_Base_Start_IT(&htim2);
 
