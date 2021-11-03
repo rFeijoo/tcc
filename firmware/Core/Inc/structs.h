@@ -8,6 +8,7 @@
 #define _STRUCTS_H_
 
 #include <stdint.h>
+#include <stdbool.h>
 #include "adc.h"
 #include "main.h"
 
@@ -41,7 +42,9 @@ typedef struct {
 typedef struct {
 	char *tag;
 
-	digital_IOs *probe_1, *probe_2, *probe_3;
+	digital_IOs *probe_1;
+	digital_IOs *probe_2;
+	digital_IOs *probe_3;
 } debug_mod;
 
 /**
@@ -49,8 +52,6 @@ typedef struct {
  */
 typedef struct {
 	ADC_HandleTypeDef *ADC;
-
-	float sample;
 
 	float frst_level[RMS_FRST_LEVEL_LENGTH];
 	float scnd_level[RMS_SCND_LEVEL_LENGTH];
@@ -63,17 +64,12 @@ typedef struct {
 	uint8_t thrd_level_index;
 	uint8_t frth_level_index;
 	uint8_t ffth_level_index;
-
-	float scnd_level_value;
-	float thrd_level_value;
 } rms_measurement;
 
 /**
- *	@brief Definição da estrutura de medição de potência e energia.
+ *	@brief Definição da estrutura de medição de potência.
  */
 typedef struct {
-	float energy;
-
 	float frst_level[RMS_THRD_LEVEL_LENGTH];
 	float scnd_level[RMS_FRTH_LEVEL_LENGTH];
 	float thrd_level[RMS_FFTH_LEVEL_LENGTH];
@@ -81,7 +77,7 @@ typedef struct {
 	uint8_t frst_level_index;
 	uint8_t scnd_level_index;
 	uint8_t thrd_level_index;
-} power_and_energy;
+} power_measurement;
 
 /**
  *	@brief Definição da estrutura do sistema fotovoltaico.
@@ -89,17 +85,19 @@ typedef struct {
 typedef struct {
 	char *tag;
 
+	bool new_sample;
+
 	rms_measurement *master, *slave;
-	power_and_energy *power_energy;
+	power_measurement *power_energy;
 
 	digital_IOs *relay_1, *relay_2, *status;
 
 	debug_mod *dbg_mod;
 
-	uint16_t pe_clk_div_counter;
-	uint8_t events_handler;
-
+	float voltage, current, power, energy;
 	float temperature;
+
+	uint8_t events_handler;
 } photovoltaic;
 
 #endif /*_STRUCTS_H_*/
