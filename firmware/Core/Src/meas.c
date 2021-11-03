@@ -243,16 +243,23 @@ void meas_verify_temperature_events(uint8_t *handler, float temperature)
 		*handler |= EVENT_OVERHEAT;
 }
 
-void meas_temperature(photovoltaic *ptr)
+float meas_get_temperature(void)
 {
-	// Obtém a leitura do módulo ADC, em bits
+	// Obtém a leitura do módulo ADC
 	uint32_t raw = HAL_ADC_GetValue(&hadc5);
 
 	// Converte a leitura do módulo ADC em tensão
 	float voltage = (float)raw * ADC_GAIN;
 
-	// Converte a tensão em temperatura (ºC)
-	ptr->temperature = ((voltage - TEMP_SENSOR_VREF) / TEMP_SENSOR_SLOPE) + TEMP_SENSOR_TREF;
+	// Converte a tensão lida em temperatura (ºC)
+	return (((voltage - TEMP_SENSOR_VREF) / TEMP_SENSOR_SLOPE) + TEMP_SENSOR_TREF);
+}
 
-	meas_verify_temperature_triggers(ptr);
+void meas_verify_temperature_events(uint8_t *handler, float temperature)
+{
+	// Verifica se o evento de superaquecimento está iniciado, para resetá-lo
+	if (is_event_active(*handler, EVENT_OVERHEAT) && temperature <= OVERHEAT_RELEASE_LIMIT)
+		*handler &= ~EVENT_OVERHEAT;
+	else if (!is_event_active(*handler, EVENT_OVERHEAT) && temperature >= OVERHEAT_HOLD_LIMIT)
+		*handler |= EVENT_OVERHEAT;
 }

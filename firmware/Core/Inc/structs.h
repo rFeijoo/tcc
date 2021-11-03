@@ -86,6 +86,8 @@ typedef struct {
 	char *tag;
 	bool new_sample;
 
+	bool new_sample;
+
 	rms_measurement *master, *slave;
 	power_measurement *power_energy;
 
@@ -97,8 +99,6 @@ typedef struct {
 	float temperature;
 
 	uint8_t events_handler;
-
-	float temperature;
 } photovoltaic;
 
 #endif /*_STRUCTS_H_*/
