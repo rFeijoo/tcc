@@ -28,25 +28,28 @@
 /**
  *	@brief Definição dos ganhos dos circuitos de medição em regime permanente.
  */
-#define VOLTAGE_GAIN_A 164.10
-#define VOLTAGE_GAIN_B 2.0356
-#define CURRENT_GAIN_A 6.9016
-#define CURRENT_GAIN_B 0.0174
+/**
+ *	@brief Definição dos ganhos dos circuitos de medição em regime permanente.
+ */
+#define VOLTAGE_GAIN_A 146.62
+#define VOLTAGE_GAIN_B 2.7342
+#define CURRENT_GAIN_A 6.3843
+#define CURRENT_GAIN_B 0.0063
 
 /**
  *	@brief Definição dos limiares de tensão e corrente.
  */
-#define OVERVOLTAGE_HOLD_LIMIT		200.0
-#define OVERVOLTAGE_RELEASE_LIMIT	175.0
+#define OVERVOLTAGE_HOLD_LIMIT		500.0
+#define OVERVOLTAGE_RELEASE_LIMIT	475.0
 
 #define UNDERVOLTAGE_HOLD_LIMIT		25.00
 #define UNDERVOLTAGE_RELEASE_LIMIT	50.00
 
-#define OVERCURRENT_HOLD_LIMIT		3.00
-#define OVERCURRENT_RELEASE_LIMIT	2.00
+#define OVERCURRENT_HOLD_LIMIT		20.00
+#define OVERCURRENT_RELEASE_LIMIT	19.00
 
-#define OVERHEAT_HOLD_LIMIT			50.00
-#define OVERHEAT_RELEASE_LIMIT		45.00
+#define OVERHEAT_HOLD_LIMIT			75.00
+#define OVERHEAT_RELEASE_LIMIT		50.00
 
 /**
  *	@brief Definição do diferencial de tempo para cálculo da energia.
