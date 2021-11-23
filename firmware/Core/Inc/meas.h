@@ -28,9 +28,6 @@
 /**
  *	@brief Definição dos ganhos dos circuitos de medição em regime permanente.
  */
-/**
- *	@brief Definição dos ganhos dos circuitos de medição em regime permanente.
- */
 #define VOLTAGE_GAIN_A 146.62
 #define VOLTAGE_GAIN_B 2.7342
 #define CURRENT_GAIN_A 6.3843
