@@ -1,0 +1,8 @@
+events.c:3:12:events_initialize_debug_mod	32	static
+events.c:30:14:events_initialize_digital_ios	32	static
+events.c:50:6:events_blink_debug_module	16	static
+events.c:63:6:events_change_state	16	static
+events.c:71:6:is_event_active	16	static
+events.c:79:6:events_handler	16	static
+events.c:118:6:events_output_relays	16	static
+events.c:140:6:events_output_debugger	16	static

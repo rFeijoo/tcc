@@ -1,0 +1,4 @@
+objects_def.c:9:6:objects_def_init	24	static
+objects_def.c:21:6:HAL_ADC_ConvCpltCallback	16	static
+objects_def.c:29:6:objects_def_exti_gpio	16	static
+objects_def.c:37:6:objects_def_loop	8	static
